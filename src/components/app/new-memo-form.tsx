@@ -57,7 +57,15 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
       category: values.category === 'uncategorized' ? undefined : values.category,
     };
     onAddMemo(submissionValues);
-    form.reset();
+    form.reset({
+      title: '',
+      content: '',
+      category: '',
+      imageUrl: '', // Ensure imageUrl is cleared
+      isVoiceMemo: false,
+      icon: undefined,
+      coverImageUrl: undefined,
+    });
     setIsVoice(false);
     
     // toast({
@@ -174,25 +182,27 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
                   <Mic className="h-4 w-4" />
               </Button>
             </div>
-            <Collapsible>
-              <CollapsibleTrigger asChild>
-                <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
-                    <Palette className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="absolute right-0 mt-2 z-10 bg-sidebar p-4 rounded-md border w-full">
-                    <MemoToolbar
-                        memo={form.getValues()}
-                        onIconChange={handleIconChange}
-                        onCoverImageChange={handleCoverImageChange}
-                        onRemoveCoverImage={handleRemoveCoverImage}
-                        images={INITIAL_PLACEHOLDER_IMAGES}
-                        isNewMemo={true}
-                    />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            <div className="relative">
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
+                      <Palette className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="absolute right-0 mt-2 z-10 bg-sidebar p-4 rounded-md border w-full">
+                      <MemoToolbar
+                          memo={form.getValues()}
+                          onIconChange={handleIconChange}
+                          onCoverImageChange={handleCoverImageChange}
+                          onRemoveCoverImage={handleRemoveCoverImage}
+                          images={INITIAL_PLACEHOLDER_IMAGES}
+                          isNewMemo={true}
+                      />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
         </div>
         <Button type="submit" className="w-full">메모 추가</Button>
       </form>
