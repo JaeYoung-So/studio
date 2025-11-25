@@ -167,8 +167,16 @@ export default function Home() {
       imageUrl: imageDataUrl,
       imageHint: 'uploaded'
     };
-    setUploadedImages(prev => [...prev, newImage]);
+    setUploadedImages(prev => [newImage, ...prev]);
     handleBackgroundChange(imageDataUrl);
+  };
+
+  const handleImageDelete = (imageId: string) => {
+    const imageToDelete = uploadedImages.find(img => img.id === imageId);
+    if(imageToDelete && backgroundUrl === imageToDelete.imageUrl) {
+      setBackgroundUrl('');
+    }
+    setUploadedImages(prev => prev.filter(image => image.id !== imageId));
   };
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
@@ -210,6 +218,7 @@ export default function Home() {
             backgroundOpacity={backgroundOpacity}
             onImageUpload={handleImageUpload}
             uploadedImages={uploadedImages}
+            onImageDelete={handleImageDelete}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList
