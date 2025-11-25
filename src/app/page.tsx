@@ -114,7 +114,7 @@ export default function Home() {
     }
     // Reset category selection when language changes to avoid mismatches
     setSelectedCategory(t('all'));
-  }, [language, isClient, t]);
+  }, [language, isClient]);
 
   useEffect(() => {
     if (isClient) {
@@ -236,26 +236,29 @@ export default function Home() {
     }
   };
 
-  const filteredMemos = memos
-    .filter(memo => {
-      if (selectedCategory === t('all')) {
-        return true;
-      }
-      if (selectedCategory === t('uncategorized')) {
-        return !memo.category;
-      }
-      return memo.category === selectedCategory;
-    })
-    .filter(memo => {
-      if (!searchTerm) {
-        return true;
-      }
-      const term = searchTerm.toLowerCase();
-      return (
-        (memo.title && memo.title.toLowerCase().includes(term)) ||
-        (memo.content && memo.content.toLowerCase().includes(term))
-      );
-    });
+  const filteredMemos = memos.filter(memo => {
+    const categoryMatch =
+      selectedCategory === t('all')
+        ? true
+        : selectedCategory === t('uncategorized')
+        ? !memo.category
+        : memo.category === selectedCategory;
+
+    if (!categoryMatch) {
+      return false;
+    }
+
+    if (!searchTerm) {
+      return true;
+    }
+
+    const term = searchTerm.toLowerCase();
+    const searchTermMatch =
+      (memo.title && memo.title.toLowerCase().includes(term)) ||
+      (memo.content && memo.content.toLowerCase().includes(term));
+
+    return searchTermMatch;
+  });
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
   const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
