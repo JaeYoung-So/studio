@@ -64,13 +64,14 @@ export default function Home() {
         imageUrls: memo.imageUrls || (memo.imageUrl ? [memo.imageUrl] : [])
       })));
     } else {
+       const currentLang = localStorage.getItem('language') as Language || 'ko';
        const initialMemoData = initialMemos.map((memo, index) => ({
         id: `initial-${index + 1}`,
         createdAt: new Date(Date.now() - index * 1000 * 60 * 60 * 24),
         ...memo,
-        title: language === 'en' ? `Meeting Prep ${index}` : memo.title,
-        content: language === 'en' ? `Content for memo ${index}` : memo.content,
-        category: language === 'en' ? { '업무': 'Work', '일상': 'Daily', '아이디어': 'Idea' }[memo.category || ''] || 'Misc' : memo.category,
+        title: currentLang === 'en' ? `Meeting Prep ${index}` : memo.title,
+        content: currentLang === 'en' ? `Content for memo ${index}` : memo.content,
+        category: currentLang === 'en' ? { '업무': 'Work', '일상': 'Daily', '아이디어': 'Idea' }[memo.category || ''] || 'Misc' : memo.category,
       }));
       setMemos(initialMemoData);
     }
@@ -79,7 +80,8 @@ export default function Home() {
     if (storedCategories) {
       setCategories(JSON.parse(storedCategories));
     } else {
-       setCategories(language === 'en' ? ['Daily', 'Work', 'Idea', 'Important'] : INITIAL_CATEGORIES);
+      const currentLang = localStorage.getItem('language') as Language || 'ko';
+      setCategories(currentLang === 'en' ? ['Daily', 'Work', 'Idea', 'Important'] : INITIAL_CATEGORIES);
     }
 
     const storedBgUrl = localStorage.getItem('backgroundUrl');
@@ -106,42 +108,43 @@ export default function Home() {
     if (metaDescription) {
       metaDescription.setAttribute('content', t('description'));
     }
+    setSelectedCategory(t('all'));
   }, [t, isClient]);
 
   useEffect(() => {
     if (isClient) {
-      setSelectedCategory(t('all'));
+      localStorage.setItem('memos', JSON.stringify(memos));
     }
-  }, [language, isClient, t]);
-
-  useEffect(() => {
-    if (!isClient || memos.length === 0 && localStorage.getItem('memos') === null) return;
-    localStorage.setItem('memos', JSON.stringify(memos));
   }, [memos, isClient]);
   
   useEffect(() => {
-    if (!isClient || categories.length === 0 && localStorage.getItem('categories') === null) return;
-    localStorage.setItem('categories', JSON.stringify(categories));
+    if (isClient) {
+      localStorage.setItem('categories', JSON.stringify(categories));
+    }
   }, [categories, isClient]);
 
   useEffect(() => {
-    if (!isClient) return;
-    localStorage.setItem('backgroundUrl', backgroundUrl);
+    if (isClient) {
+      localStorage.setItem('backgroundUrl', backgroundUrl);
+    }
   }, [backgroundUrl, isClient]);
   
   useEffect(() => {
-    if (!isClient) return;
-    localStorage.setItem('backgroundColor', backgroundColor);
+    if (isClient) {
+      localStorage.setItem('backgroundColor', backgroundColor);
+    }
   }, [backgroundColor, isClient]);
 
   useEffect(() => {
-    if (!isClient) return;
-    localStorage.setItem('backgroundOpacity', String(backgroundOpacity));
+    if (isClient) {
+      localStorage.setItem('backgroundOpacity', String(backgroundOpacity));
+    }
   }, [backgroundOpacity, isClient]);
 
   useEffect(() => {
-    if (!isClient || images.length === 0 && localStorage.getItem('images') === null) return;
-    localStorage.setItem('images', JSON.stringify(images));
+    if (isClient) {
+      localStorage.setItem('images', JSON.stringify(images));
+    }
   }, [images, isClient]);
   
 
@@ -236,8 +239,9 @@ export default function Home() {
 
     const searchMatch =
       searchTerm === '' ||
-      memo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      memo.content.toLowerCase().includes(searchTerm.toLowerCase());
+      (memo.title && memo.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (memo.content && memo.content.toLowerCase().includes(searchTerm.toLowerCase()));
+      
     return categoryMatch && searchMatch;
   });
 
