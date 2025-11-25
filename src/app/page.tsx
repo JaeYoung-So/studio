@@ -237,24 +237,25 @@ export default function Home() {
   };
 
   const filteredMemos = memos
-  .filter(memo => {
-    // 1. Filter by category first
-    if (selectedCategory === t('all')) {
-      return true;
-    }
-    if (selectedCategory === t('uncategorized')) {
-      return !memo.category;
-    }
-    return memo.category === selectedCategory;
-  })
-  .filter(memo => {
-    // 2. Then, filter by search term
-    return (
-      !searchTerm ||
-      (memo.title && memo.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (memo.content && memo.content.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  });
+    .filter(memo => {
+      if (selectedCategory === t('all')) {
+        return true;
+      }
+      if (selectedCategory === t('uncategorized')) {
+        return !memo.category;
+      }
+      return memo.category === selectedCategory;
+    })
+    .filter(memo => {
+      if (!searchTerm) {
+        return true;
+      }
+      const term = searchTerm.toLowerCase();
+      return (
+        (memo.title && memo.title.toLowerCase().includes(term)) ||
+        (memo.content && memo.content.toLowerCase().includes(term))
+      );
+    });
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
   const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
