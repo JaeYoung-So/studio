@@ -45,6 +45,8 @@ export function MemoToolbar({
   isNewMemo = false
 }: MemoToolbarProps) {
   const backgroundImages = images.filter(p => p.id.startsWith('bg-'));
+  const memoImages = images.filter(p => p.id.startsWith('memo-'));
+
   const icons = [
     { name: 'smile', component: Smile },
     { name: 'briefcase', component: Briefcase },
@@ -146,7 +148,7 @@ export function MemoToolbar({
         </div>
         <ScrollArea className="h-40">
           <div className="grid grid-cols-2 gap-2">
-            {backgroundImages.map(image => (
+            {[...backgroundImages, ...memoImages].map(image => (
               <button
                 key={image.id}
                 className={cn(

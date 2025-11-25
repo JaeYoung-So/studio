@@ -117,10 +117,9 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
             </div>
         </CardHeader>
         <CardContent className="flex-1 space-y-4">
-            {memo.imageUrl && (
             <div className="relative aspect-video w-full overflow-hidden rounded-md">
                 <Image
-                src={memo.imageUrl}
+                src={memo.imageUrl || `https://picsum.photos/seed/${memo.id}/400/225`}
                 alt={memo.title}
                 fill
                 className="object-cover"
@@ -128,7 +127,6 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                 data-ai-hint="memo image"
                 />
             </div>
-            )}
             <p className="text-sm text-foreground/80 whitespace-pre-wrap">{memo.content}</p>
         </CardContent>
         <CardFooter className="flex justify-between items-center text-xs text-muted-foreground">
