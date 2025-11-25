@@ -59,7 +59,6 @@ function AppSidebarCategories({
   const allCategories = ['전체', ...categories];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
   const handleAddCategory = () => {
     if (newCategory.trim() === '') {
@@ -87,7 +86,6 @@ function AppSidebarCategories({
   };
 
   return (
-    <>
     <SidebarContent>
         <SidebarGroup>
         <div className="flex justify-between items-center pr-2">
@@ -125,49 +123,42 @@ function AppSidebarCategories({
                 {category}
                 </SidebarMenuButton>
                 {category !== '전체' && (
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setCategoryToDelete(category);
-                            }}
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100"
+                                onClick={(e) => e.stopPropagation()}
+                                >
+                                <Trash2 className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>카테고리 삭제</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              '{category}' 카테고리를 정말로 삭제하시겠습니까? 이 카테고리에 속한 메모들은 '미분류' 상태가 됩니다.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>취소</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                  onDeleteCategory(category);
+                              }}
                             >
-                            <Trash2 className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                    </AlertDialogTrigger>
+                              삭제
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 )}
             </SidebarMenuItem>
             ))}
         </SidebarMenu>
         </SidebarGroup>
     </SidebarContent>
-    <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>카테고리 삭제</AlertDialogTitle>
-            <AlertDialogDescription>
-              '{categoryToDelete}' 카테고리를 정말로 삭제하시겠습니까? 이 카테고리에 속한 메모들은 '미분류' 상태가 됩니다.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>취소</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (categoryToDelete) {
-                  onDeleteCategory(categoryToDelete);
-                }
-                setCategoryToDelete(null);
-              }}
-            >
-              삭제
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
   );
 }
 
