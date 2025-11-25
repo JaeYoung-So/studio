@@ -238,32 +238,20 @@ export default function Home() {
     }
   };
 
-  const filteredMemos = memos.filter(memo => {
-    // Category Filter
-    const categoryMatch =
-      selectedCategory === t('all')
-        ? true
-        : selectedCategory === t('uncategorized')
-        ? !memo.category
-        : memo.category === selectedCategory;
-
-    if (!categoryMatch) {
-      return false;
-    }
-
-    // Search Term Filter
-    if (!searchTerm) {
-      return true;
-    }
-
-    const term = searchTerm.toLowerCase();
-    const searchTermMatch =
-      (memo.title && memo.title.toLowerCase().includes(term)) ||
-      (memo.content && memo.content.toLowerCase().includes(term)) ||
-      (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term));
-
-    return searchTermMatch;
-  });
+  const filteredMemos = memos
+    .filter(memo => {
+      if (selectedCategory === t('all')) return true;
+      if (selectedCategory === t('uncategorized')) return !memo.category;
+      return memo.category === selectedCategory;
+    })
+    .filter(memo => {
+      if (!searchTerm) return true;
+      const term = searchTerm.toLowerCase();
+      const titleMatch = memo.title?.toLowerCase().includes(term);
+      const contentMatch = memo.content?.toLowerCase().includes(term);
+      const dateMatch = format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term);
+      return titleMatch || contentMatch || dateMatch;
+    });
 
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
