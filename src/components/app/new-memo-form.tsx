@@ -10,10 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import type { Memo } from '@/lib/types';
-import { CATEGORIES } from '@/lib/types';
 import { ImagePlus, Mic } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const formSchema = z.object({
   title: z.string().min(1, { message: '제목을 입력해주세요.' }).max(50),
@@ -27,12 +25,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface NewMemoFormProps {
   onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
+  categories: string[];
 }
 
-export default function NewMemoForm({ onAddMemo }: NewMemoFormProps) {
+export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps) {
   const { toast } = useToast();
   const [isVoice, setIsVoice] = useState(false);
-  const memoImages = PlaceHolderImages.filter(p => p.id.startsWith('memo-'));
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,14 +59,26 @@ export default function NewMemoForm({ onAddMemo }: NewMemoFormProps) {
     form.setValue('isVoiceMemo', newIsVoice);
     setIsVoice(newIsVoice);
   };
+  
+  const handleImageUploadClick = () => {
+    fileInputRef.current?.click();
+  };
 
-  const handleAddRandomImage = () => {
-    const randomImage = memoImages[Math.floor(Math.random() * memoImages.length)];
-    form.setValue('imageUrl', randomImage.imageUrl);
-     toast({
-      title: "이미지 추가됨",
-      description: `랜덤 이미지가 메모에 추가되었습니다.`,
-    });
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (typeof e.target?.result === 'string') {
+          form.setValue('imageUrl', e.target.result);
+          toast({
+            title: "이미지 추가됨",
+            description: "이미지가 메모에 추가되었습니다.",
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -105,14 +116,14 @@ export default function NewMemoForm({ onAddMemo }: NewMemoFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>카테고리</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="카테고리 선택" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {CATEGORIES.map(category => (
+                  {categories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
                 </SelectContent>
@@ -121,8 +132,15 @@ export default function NewMemoForm({ onAddMemo }: NewMemoFormProps) {
             </FormItem>
           )}
         />
+         <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          accept="image/*"
+        />
         <div className="flex gap-2">
-            <Button type="button" variant="outline" size="icon" onClick={handleAddRandomImage} aria-label="이미지 추가">
+            <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
                 <ImagePlus className="h-4 w-4" />
             </Button>
             <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">

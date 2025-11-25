@@ -42,11 +42,13 @@ const initialMemos: Memo[] = [
   },
 ];
 
+const INITIAL_CATEGORIES = ['일상', '업무', '아이디어', '중요'];
 
 export default function Home() {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('hsl(210 40% 98%)');
@@ -59,6 +61,13 @@ export default function Home() {
       setMemos(JSON.parse(storedMemos).map((memo: any) => ({...memo, createdAt: new Date(memo.createdAt)})));
     } else {
       setMemos(initialMemos);
+    }
+    
+    const storedCategories = localStorage.getItem('categories');
+    if (storedCategories) {
+      setCategories(JSON.parse(storedCategories));
+    } else {
+      setCategories(INITIAL_CATEGORIES);
     }
 
     const storedBgUrl = localStorage.getItem('backgroundUrl');
@@ -79,6 +88,10 @@ export default function Home() {
       localStorage.setItem('memos', JSON.stringify(memos));
     }
   }, [memos]);
+  
+  useEffect(() => {
+    localStorage.setItem('categories', JSON.stringify(categories));
+  }, [categories]);
 
   useEffect(() => {
     localStorage.setItem('backgroundUrl', backgroundUrl);
@@ -111,6 +124,22 @@ export default function Home() {
   
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
+  };
+
+  const handleAddCategory = (category: string) => {
+    if (category && !categories.includes(category)) {
+      setCategories(prev => [...prev, category]);
+    }
+  };
+
+  const handleDeleteCategory = (categoryToDelete: string) => {
+    setCategories(prev => prev.filter(c => c !== categoryToDelete));
+    setMemos(prevMemos => prevMemos.map(memo => 
+      memo.category === categoryToDelete ? { ...memo, category: '일상' } : memo
+    ));
+    if (selectedCategory === categoryToDelete) {
+      setSelectedCategory('전체');
+    }
   };
   
   const handleUpdateMemo = (updatedMemo: Memo) => {
@@ -149,6 +178,9 @@ export default function Home() {
     <SidebarProvider>
       <AppSidebar 
         onAddMemo={handleAddMemo}
+        categories={categories}
+        onAddCategory={handleAddCategory}
+        onDeleteCategory={handleDeleteCategory}
         onSelectCategory={handleCategorySelect}
         selectedCategory={selectedCategory}
         backgroundColor={backgroundColor}
