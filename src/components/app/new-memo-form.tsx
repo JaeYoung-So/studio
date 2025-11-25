@@ -47,13 +47,9 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
   function onSubmit(values: FormValues) {
     const submissionValues = {
       ...values,
-      category: values.category === 'uncategorized' ? '' : values.category,
+      category: values.category === 'uncategorized' ? undefined : values.category,
     };
     onAddMemo(submissionValues);
-    toast({
-      title: "메모 추가 완료",
-      description: `"${values.title}" 메모가 성공적으로 추가되었습니다.`,
-    });
     form.reset();
     setIsVoice(false);
   }
@@ -127,7 +123,7 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="uncategorized">미분류</SelectItem>
+                  <SelectItem value="uncategorized">선택 안함</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
