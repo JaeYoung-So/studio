@@ -109,7 +109,7 @@ export default function Home() {
       metaDescription.setAttribute('content', t('description'));
     }
     setSelectedCategory(t('all'));
-  }, [t, isClient, language]);
+  }, [language, isClient]);
 
   useEffect(() => {
     if (isClient) {
@@ -232,17 +232,20 @@ export default function Home() {
   };
 
   const filteredMemos = memos.filter(memo => {
-    const categoryMatch =
-      selectedCategory === t('all') ||
-      (selectedCategory === t('uncategorized') && !memo.category) ||
-      memo.category === selectedCategory;
-
     const searchMatch =
       !searchTerm ||
       (memo.title && memo.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (memo.content && memo.content.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-    return categoryMatch && searchMatch;
+
+    if (!searchMatch) return false;
+
+    if (selectedCategory === t('all')) {
+      return true;
+    }
+    if (selectedCategory === t('uncategorized')) {
+      return !memo.category;
+    }
+    return memo.category === selectedCategory;
   });
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
