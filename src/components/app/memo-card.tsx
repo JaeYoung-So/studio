@@ -97,26 +97,31 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
             isDragging && "touch-none"
         )}
     >
-      {memo.coverImageUrl && (
-          <div className="relative h-32 w-full bg-muted/20">
-            <Image
-                src={memo.coverImageUrl}
-                alt={memo.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          </div>
-      )}
-      <div className={cn("relative", !memo.coverImageUrl && !memo.icon && 'pt-6')}>
-        {Icon && !memo.coverImageUrl && (
-          <div className="absolute -top-5 left-4 bg-background p-1 rounded-full border">
-            <Icon className="h-8 w-8 text-gray-500" />
-          </div>
-        )}
+        <div className="relative">
+            {memo.coverImageUrl && (
+                <div className="relative h-32 w-full bg-muted/20">
+                    <Image
+                        src={memo.coverImageUrl}
+                        alt={memo.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                </div>
+            )}
+            {Icon && (
+                <div className={cn(
+                    "absolute -top-5 left-4 bg-background p-1 rounded-full border",
+                    memo.coverImageUrl ? "top-auto bottom-[-1.5rem] bg-card/80 backdrop-blur-sm" : ""
+                )}>
+                    <Icon className="h-8 w-8 text-gray-500" />
+                </div>
+            )}
+        </div>
+      <div className={cn("relative flex flex-col flex-1")}>
         <CardHeader className={cn(
-            "flex flex-row items-start justify-between space-y-0 pb-2",
-            Icon && !memo.coverImageUrl ? 'pt-8' : 'pt-6'
+            "flex flex-row items-start justify-between space-y-0 pb-2 pt-6",
+            Icon && "pt-8"
         )}>
             <CardTitle className="text-lg font-headline flex items-center gap-2">
                  {memo.title}
@@ -160,7 +165,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
                 </AlertDialog>
             </div>
         </CardHeader>
-        <CardContent className="flex-1 space-y-4">
+        <CardContent className="flex-1 space-y-4 pt-0">
             {memo.imageUrl && (
               <div className="relative aspect-video w-full rounded-md overflow-hidden mt-2">
                 <Image
@@ -174,7 +179,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
             )}
             <p className="text-sm text-foreground/80 whitespace-pre-wrap">{memo.content}</p>
         </CardContent>
-        <CardFooter className="flex justify-between items-center text-xs text-muted-foreground">
+        <CardFooter className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
             <div className="flex items-center gap-2">
             {memo.category && <Badge variant="secondary">{memo.category}</Badge>}
             {memo.isVoiceMemo && (
