@@ -231,8 +231,8 @@ export default function Home() {
   const filteredMemos = memos.filter(memo => {
     const categoryMatch =
       selectedCategory === t('all') ||
-      memo.category === selectedCategory ||
-      (selectedCategory === t('uncategorized') && !memo.category);
+      (selectedCategory === t('uncategorized') && !memo.category) ||
+      memo.category === selectedCategory;
 
     const searchMatch =
       searchTerm === '' ||

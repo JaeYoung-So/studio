@@ -4,7 +4,7 @@ import type { Memo } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mic, Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus, Palette } from 'lucide-react';
+import { Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus, Palette } from 'lucide-react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { ko, enUS } from 'date-fns/locale';
@@ -100,11 +100,13 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
 
     const handleCancel = () => {
         setIsEditing(false);
+        setIsDecoratorOpen(false);
     };
 
     const handleSave = () => {
         onUpdate(editedMemo);
         setIsEditing(false);
+        setIsDecoratorOpen(false);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -132,7 +134,6 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
         const files = event.target.files;
         if (files) {
           const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-          const currentImages = editedMemo.imageUrls || [];
           
           Array.from(files).forEach(file => {
             if (!supportedTypes.includes(file.type)) {
@@ -215,165 +216,172 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
       </div>
 
       <div className={cn("relative flex flex-col flex-1")}>
-        <CardHeader className={cn(
-            "flex flex-row items-start justify-between space-y-0 pb-2",
-             Icon ? "pt-8" : "pt-6"
-        )}>
-            {isEditing ? (
-                <Input
-                    name="title"
-                    value={editedMemo.title}
-                    onChange={handleInputChange}
-                    className="text-lg font-headline flex items-center gap-2 border-0 shadow-none focus-visible:ring-0 p-0"
-                />
-            ) : (
-                <CardTitle className="text-lg font-headline flex items-center gap-2">
-                    {memo.title}
-                </CardTitle>
-            )}
-            <div className="flex items-center">
-                {!isEditing && (
-                    <button {...attributes} {...listeners} className="cursor-grab p-2 text-muted-foreground hover:bg-accent rounded-md">
-                        <GripVertical className="h-5 w-5" />
-                    </button>
-                )}
-                <MemoToolbar 
-                    memo={editedMemo}
-                    onIconChange={handleIconChange} 
-                    onCoverImageChange={handleCoverImageChange}
-                    onRemoveCoverImage={handleRemoveCoverImage}
-                    images={images}
-                    onUpdate={(updatedPart) => setEditedMemo(prev => ({...prev, ...updatedPart}))}
-                    t={t}
-                    isEditing={isEditing}
-                    isDecoratorOpen={isDecoratorOpen}
-                    setIsDecoratorOpen={setIsDecoratorOpen}
-                />
-                 {isEditing ? (
-                    <>
-                        <Button onClick={handleSave} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary"><Save className="h-4 w-4" /></Button>
-                        <Button onClick={handleCancel} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"><X className="h-4 w-4" /></Button>
-                    </>
-                 ) : (
-                    <>
-                        <Button onClick={handleEdit} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary"><Edit className="h-4 w-4" /></Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                                aria-label={t('deleteMemoTitle')}
-                                >
-                                <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>{t('deleteMemoTitle')}</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    {t('deleteMemoDesc')}
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => onDelete(memo.id)}>{t('delete')}</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </>
-                 )}
-            </div>
-        </CardHeader>
-        <CardContent className="flex-1 space-y-4 pt-0">
-            {isEditing ? (
-                <div className='space-y-4'>
-                     <Textarea
-                        name="content"
-                        value={editedMemo.content}
-                        onChange={handleInputChange}
-                        className="text-sm text-foreground/80 whitespace-pre-wrap"
+          <CardHeader className={cn(
+              "flex flex-row items-start justify-between space-y-0 pb-2",
+              Icon ? "pt-8" : "pt-6"
+          )}>
+              {isEditing ? (
+                  <Input
+                      name="title"
+                      value={editedMemo.title}
+                      onChange={handleInputChange}
+                      className="text-lg font-headline flex items-center gap-2 border-0 shadow-none focus-visible:ring-0 p-0"
+                  />
+              ) : (
+                  <CardTitle className="text-lg font-headline flex items-center gap-2">
+                      {memo.title}
+                  </CardTitle>
+              )}
+              <div className="flex items-center">
+                  {!isEditing && (
+                      <button {...attributes} {...listeners} className="cursor-grab p-2 text-muted-foreground hover:bg-accent rounded-md">
+                          <GripVertical className="h-5 w-5" />
+                      </button>
+                  )}
+                  
+                  {isEditing ? (
+                      <>
+                          <Button onClick={handleSave} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary"><Save className="h-4 w-4" /></Button>
+                          <Button onClick={handleCancel} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"><X className="h-4 w-4" /></Button>
+                      </>
+                  ) : (
+                      <>
+                          <Button onClick={handleEdit} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary"><Edit className="h-4 w-4" /></Button>
+                          <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                  <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                                  aria-label={t('deleteMemoTitle')}
+                                  >
+                                  <Trash2 className="h-4 w-4" />
+                                  </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                  <AlertDialogTitle>{t('deleteMemoTitle')}</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                      {t('deleteMemoDesc')}
+                                  </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                  <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => onDelete(memo.id)}>{t('delete')}</AlertDialogAction>
+                                  </AlertDialogFooter>
+                              </AlertDialogContent>
+                          </AlertDialog>
+                      </>
+                  )}
+                  {!isEditing && (
+                     <MemoToolbar 
+                        memo={editedMemo}
+                        onIconChange={handleIconChange} 
+                        onCoverImageChange={handleCoverImageChange}
+                        onRemoveCoverImage={handleRemoveCoverImage}
+                        images={images}
+                        t={t}
+                        isEditing={isEditing}
                     />
-                    <div className="grid grid-cols-3 gap-2">
-                        {editedMemo.imageUrls?.map((url, index) => (
-                        <div key={index} className="relative group">
-                            <Image src={url} alt={`Preview ${index}`} width={100} height={100} className="w-full h-auto object-cover rounded-md" unoptimized={url.endsWith('.gif')} />
-                            <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => handleRemoveImage(index)}>
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                        ))}
-                    </div>
+                  )}
+              </div>
+          </CardHeader>
+          <CardContent className="flex-1 space-y-4 pt-0">
+              {isEditing ? (
+                  <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} className='space-y-4'>
+                      <Textarea
+                          name="content"
+                          value={editedMemo.content}
+                          onChange={handleInputChange}
+                          className="text-sm text-foreground/80 whitespace-pre-wrap"
+                      />
+                      <div className="grid grid-cols-3 gap-2">
+                          {editedMemo.imageUrls?.map((url, index) => (
+                          <div key={index} className="relative group">
+                              <Image src={url} alt={`Preview ${index}`} width={100} height={100} className="w-full h-auto object-cover rounded-md" unoptimized={url.endsWith('.gif')} />
+                              <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => handleRemoveImage(index)}>
+                                  <X className="h-4 w-4" />
+                              </Button>
+                          </div>
+                          ))}
+                      </div>
 
-                    <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
-                    <div className="flex gap-2">
-                        <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
-                            <ImagePlus className="h-4 w-4" />
-                        </Button>
-                        <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen}>
-                            <CollapsibleTrigger asChild>
-                                <Button type="button" variant="outline" size="icon">
-                                    <Palette className="h-4 w-4" />
-                                </Button>
-                            </CollapsibleTrigger>
-                        </Collapsible>
-                    </div>
+                      <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
+                      <div className="flex gap-2">
+                          <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
+                              <ImagePlus className="h-4 w-4" />
+                          </Button>
+                          <CollapsibleTrigger asChild>
+                              <Button type="button" variant="outline" size="icon">
+                                  <Palette className="h-4 w-4" />
+                              </Button>
+                          </CollapsibleTrigger>
+                      </div>
+                      <MemoToolbar
+                          memo={editedMemo}
+                          onIconChange={handleIconChange}
+                          onCoverImageChange={handleCoverImageChange}
+                          onRemoveCoverImage={handleRemoveCoverImage}
+                          images={images}
+                          t={t}
+                          isEditing={isEditing}
+                        />
 
-                </div>
-            ) : (
-                <>
-                    {memo.imageUrls && memo.imageUrls.length > 0 && (
-                        <Carousel className="w-full max-w-xs mx-auto">
-                            <CarouselContent>
-                                {memo.imageUrls.map((url, index) => (
-                                    <CarouselItem key={index}>
-                                        <div className="relative aspect-video w-full rounded-md overflow-hidden mt-2">
-                                            <Image
-                                                src={url}
-                                                alt={`${memo.title} - image ${index + 1}`}
-                                                fill
-                                                className="object-cover"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                unoptimized={url.endsWith('.gif')}
-                                            />
-                                        </div>
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            {memo.imageUrls.length > 1 && (
-                                <>
-                                    <CarouselPrevious className="-left-8" />
-                                    <CarouselNext className="-right-8" />
-                                </>
-                            )}
-                        </Carousel>
-                    )}
-                    <p className="text-sm text-foreground/80 whitespace-pre-wrap">{memo.content}</p>
-                </>
-            )}
-        </CardContent>
-        <CardFooter className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
-            <div className="flex items-center gap-2">
-                {isEditing ? (
-                     <Select onValueChange={handleCategoryChange} value={editedMemo.category || 'uncategorized'}>
-                        <SelectTrigger className="text-xs h-7">
-                            <SelectValue placeholder={t('selectCategory')} />
-                        </SelectTrigger>
-                        <SelectContent>
+                  </Collapsible>
+              ) : (
+                  <>
+                      {memo.imageUrls && memo.imageUrls.length > 0 && (
+                          <Carousel className="w-full max-w-xs mx-auto">
+                              <CarouselContent>
+                                  {memo.imageUrls.map((url, index) => (
+                                      <CarouselItem key={index}>
+                                          <div className="relative aspect-video w-full rounded-md overflow-hidden mt-2">
+                                              <Image
+                                                  src={url}
+                                                  alt={`${memo.title} - image ${index + 1}`}
+                                                  fill
+                                                  className="object-cover"
+                                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                  unoptimized={url.endsWith('.gif')}
+                                              />
+                                          </div>
+                                      </CarouselItem>
+                                  ))}
+                              </CarouselContent>
+                              {memo.imageUrls.length > 1 && (
+                                  <>
+                                      <CarouselPrevious className="-left-8" />
+                                      <CarouselNext className="-right-8" />
+                                  </>
+                              )}
+                          </Carousel>
+                      )}
+                      <p className="text-sm text-foreground/80 whitespace-pre-wrap">{memo.content}</p>
+                  </>
+              )}
+          </CardContent>
+          <CardFooter className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
+              <div className="flex items-center gap-2">
+                  {isEditing ? (
+                      <Select onValueChange={handleCategoryChange} value={editedMemo.category || 'uncategorized'}>
+                          <SelectTrigger className="text-xs h-7">
+                              <SelectValue placeholder={t('selectCategory')} />
+                          </SelectTrigger>
+                          <SelectContent>
                           <SelectItem value="uncategorized">{t('selectNone')}</SelectItem>
                           {categories.map(category => (
-                            <SelectItem key={category} value={category}>{category}</SelectItem>
+                              <SelectItem key={category} value={category}>{category}</SelectItem>
                           ))}
-                        </SelectContent>
+                          </SelectContent>
                       </Select>
-                ) : (
-                    memo.category && <Badge variant="secondary">{memo.category}</Badge>
-                )}
-            </div>
-            <span>
-            {formatDistanceToNow(new Date(memo.createdAt), { addSuffix: true, locale: lang === 'ko' ? ko : enUS })}
-            </span>
-        </CardFooter>
+                  ) : (
+                      memo.category && <Badge variant="secondary">{memo.category}</Badge>
+                  )}
+              </div>
+              <span>
+              {formatDistanceToNow(new Date(memo.createdAt), { addSuffix: true, locale: lang === 'ko' ? ko : enUS })}
+              </span>
+          </CardFooter>
       </div>
     </Card>
   );

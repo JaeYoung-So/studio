@@ -36,12 +36,9 @@ interface MemoToolbarProps {
   onCoverImageChange: (url: string) => void;
   onRemoveCoverImage: () => void;
   images: ImagePlaceholder[];
-  onUpdate?: (memo: Partial<Memo>) => void;
   isNewMemo?: boolean;
   t: (key: any, ...args: any[]) => string;
   isEditing?: boolean;
-  isDecoratorOpen?: boolean;
-  setIsDecoratorOpen?: (open: boolean) => void;
 }
 
 export function MemoToolbar({
@@ -50,12 +47,9 @@ export function MemoToolbar({
   onCoverImageChange,
   onRemoveCoverImage,
   images,
-  onUpdate,
   isNewMemo = false,
   t,
   isEditing = false,
-  isDecoratorOpen,
-  setIsDecoratorOpen
 }: MemoToolbarProps) {
 
   const icons = [
@@ -243,11 +237,7 @@ export function MemoToolbar({
     </div>
   );
 
-  if (isNewMemo) {
-    return toolbarContent;
-  }
-  
-  if (isEditing) {
+  if (isNewMemo || isEditing) {
     return (
        <CollapsibleContent>
             <div className="bg-card p-4 rounded-md border mt-2">
