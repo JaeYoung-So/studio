@@ -6,19 +6,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function colorToRgba(color: string, alpha: number): string {
+  if (!color) return `rgba(255, 255, 255, ${alpha})`;
+
   if (color.startsWith('rgba')) {
-    // If it's already rgba, just update the alpha.
     return color.replace(/,s*[0-9.]+s*\)$/, `, ${alpha})`);
   }
 
   let r = 0, g = 0, b = 0;
 
-  const hexMatch = color.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-  if (hexMatch) {
-    r = parseInt(hexMatch[1], 16);
-    g = parseInt(hexMatch[2], 16);
-    b = parseInt(hexMatch[3], 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  if (color.startsWith('#')) {
+    let hex = color.slice(1);
+    if (hex.length === 3) {
+      hex = hex.split('').map(char => char + char).join('');
+    }
+    if (hex.length === 6) {
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
   }
 
   const hslMatch = color.match(/^hsl\((\d+)\s+([\d.]+)%\s+([\d.]+)%\)$/);
@@ -45,8 +51,18 @@ export function colorToRgba(color: string, alpha: number): string {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
   
-  // Fallback for simple color names or other formats (won't have transparency)
-  // Or if the color is already in a format that the browser understands with alpha
-  // This part is tricky. For this app, we assume HSL or HEX.
-  return color;
+  // A fallback for simple color names or other formats. 
+  // Create a temporary element to resolve the color.
+  const temp = document.createElement('div');
+  temp.style.color = color;
+  document.body.appendChild(temp);
+  const computedColor = window.getComputedStyle(temp).color;
+  document.body.removeChild(temp);
+
+  const rgbMatch = computedColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if (rgbMatch) {
+    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${alpha})`;
+  }
+
+  return color; // fallback
 }

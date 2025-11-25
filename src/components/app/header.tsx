@@ -6,14 +6,17 @@ import BackgroundSelector from './background-selector';
 import { SidebarTrigger } from '../ui/sidebar';
 import { AppLogo } from '../icons';
 import { cn, colorToRgba } from '@/lib/utils';
+import type { ImagePlaceholder } from '@/lib/placeholder-images';
 
 interface HeaderProps {
   onSearch: (term: string) => void;
   onBackgroundChange: (url: string) => void;
   onBackgroundColorChange: (color: string) => void;
   onBackgroundOpacityChange: (opacity: number) => void;
-  backgroundColor?: string;
+  backgroundColor: string;
   backgroundOpacity: number;
+  onImageUpload: (imageDataUrl: string) => void;
+  uploadedImages: ImagePlaceholder[];
 }
 
 export default function Header({ 
@@ -22,7 +25,9 @@ export default function Header({
   onBackgroundColorChange,
   onBackgroundOpacityChange, 
   backgroundColor,
-  backgroundOpacity
+  backgroundOpacity,
+  onImageUpload,
+  uploadedImages
 }: HeaderProps) {
 
   const headerStyle = backgroundColor
@@ -33,7 +38,7 @@ export default function Header({
     <header 
       className={cn(
         "flex h-16 items-center gap-4 border-b bg-background/50 px-4 md:px-6 sticky top-0 z-30 backdrop-blur-sm",
-        backgroundColor && "bg-transparent border-none"
+        "border-border/50"
       )}
       style={headerStyle}
     >
@@ -60,6 +65,8 @@ export default function Header({
           onBackgroundColorChange={onBackgroundColorChange} 
           onBackgroundOpacityChange={onBackgroundOpacityChange}
           backgroundOpacity={backgroundOpacity}
+          onImageUpload={onImageUpload}
+          uploadedImages={uploadedImages}
         />
       </div>
     </header>

@@ -6,8 +6,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/app/app-sidebar';
 import Header from '@/components/app/header';
 import MemoList from '@/components/app/memo-list';
-import { CATEGORIES } from '@/lib/types';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { colorToRgba } from '@/lib/utils';
 
 const initialMemos: Memo[] = [
@@ -48,9 +47,11 @@ export default function Home() {
   const [memos, setMemos] = useState<Memo[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  
   const [backgroundUrl, setBackgroundUrl] = useState('');
-  const [backgroundColor, setBackgroundColor] = useState('');
-  const [backgroundOpacity, setBackgroundOpacity] = useState(1);
+  const [backgroundColor, setBackgroundColor] = useState('hsl(210 40% 98%)');
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
+  const [uploadedImages, setUploadedImages] = useState<ImagePlaceholder[]>([]);
 
   useEffect(() => {
     const storedMemos = localStorage.getItem('memos');
@@ -60,18 +61,17 @@ export default function Home() {
       setMemos(initialMemos);
     }
 
-    const storedBg = localStorage.getItem('backgroundUrl');
-    if (storedBg) {
-      setBackgroundUrl(storedBg);
-    }
+    const storedBgUrl = localStorage.getItem('backgroundUrl');
+    if (storedBgUrl) setBackgroundUrl(storedBgUrl);
+    
     const storedBgColor = localStorage.getItem('backgroundColor');
-    if(storedBgColor) {
-      setBackgroundColor(storedBgColor);
-    }
+    if(storedBgColor) setBackgroundColor(storedBgColor);
+    
     const storedBgOpacity = localStorage.getItem('backgroundOpacity');
-    if (storedBgOpacity) {
-      setBackgroundOpacity(parseFloat(storedBgOpacity));
-    }
+    if (storedBgOpacity) setBackgroundOpacity(parseFloat(storedBgOpacity));
+
+    const storedUploadedImages = localStorage.getItem('uploadedImages');
+    if (storedUploadedImages) setUploadedImages(JSON.parse(storedUploadedImages));
   }, []);
 
   useEffect(() => {
@@ -91,6 +91,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('backgroundOpacity', String(backgroundOpacity));
   }, [backgroundOpacity]);
+
+  useEffect(() => {
+    localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+  }, [uploadedImages]);
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemo: Memo = {
@@ -127,7 +131,19 @@ export default function Home() {
     setBackgroundOpacity(opacity);
   };
 
-  const finalBackgroundColor = backgroundColor ? colorToRgba(backgroundColor, backgroundOpacity) : 'transparent';
+  const handleImageUpload = (imageDataUrl: string) => {
+    const newImage: ImagePlaceholder = {
+      id: `uploaded-${new Date().getTime()}`,
+      description: '업로드됨',
+      imageUrl: imageDataUrl,
+      imageHint: 'uploaded'
+    };
+    setUploadedImages(prev => [...prev, newImage]);
+    handleBackgroundChange(imageDataUrl);
+  };
+
+  const finalBackgroundColor = colorToRgba(backgroundColor, 1);
+  const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
 
   return (
     <SidebarProvider>
@@ -148,7 +164,11 @@ export default function Home() {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="flex flex-col h-full bg-background/80 dark:bg-background/90 backdrop-blur-sm">
+        <div 
+          className="absolute inset-0 z-0" 
+          style={{ backgroundColor: finalOverlayColor, transition: 'background-color 0.3s ease' }}
+        />
+        <div className="relative z-10 flex flex-col h-full bg-transparent">
           <Header
             onSearch={setSearchTerm}
             onBackgroundChange={handleBackgroundChange}
@@ -156,6 +176,8 @@ export default function Home() {
             onBackgroundOpacityChange={handleBackgroundOpacityChange}
             backgroundColor={backgroundColor}
             backgroundOpacity={backgroundOpacity}
+            onImageUpload={handleImageUpload}
+            uploadedImages={uploadedImages}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList

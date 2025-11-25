@@ -3,7 +3,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Image as ImageIcon, Palette, Upload } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
@@ -16,13 +16,24 @@ interface BackgroundSelectorProps {
   onBackgroundColorChange: (color: string) => void;
   onBackgroundOpacityChange: (opacity: number) => void;
   backgroundOpacity: number;
+  onImageUpload: (imageDataUrl: string) => void;
+  uploadedImages: ImagePlaceholder[];
 }
 
-export default function BackgroundSelector({ onBackgroundChange, onBackgroundColorChange, onBackgroundOpacityChange, backgroundOpacity }: BackgroundSelectorProps) {
+export default function BackgroundSelector({ 
+  onBackgroundChange, 
+  onBackgroundColorChange, 
+  onBackgroundOpacityChange, 
+  backgroundOpacity,
+  onImageUpload,
+  uploadedImages
+}: BackgroundSelectorProps) {
   const backgroundImages = PlaceHolderImages.filter(p => p.id.startsWith('bg-'));
+  const allImages = [...uploadedImages.slice().reverse(), ...backgroundImages];
+
   const backgroundColors = [
-    'hsl(195 53% 91%)', // default light background
-    'hsl(20 10% 8%)', // default dark background
+    'hsl(210 40% 98%)', // default light background
+    'hsl(240 10% 3.9%)', // default dark background
     '#e2e8f0',
     '#fecaca',
     '#fed7aa',
@@ -43,7 +54,7 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
       const reader = new FileReader();
       reader.onload = (e) => {
         if (typeof e.target?.result === 'string') {
-          onBackgroundChange(e.target.result);
+          onImageUpload(e.target.result);
         }
       };
       reader.readAsDataURL(file);
@@ -98,7 +109,7 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
           <Separator />
           
           <div className="space-y-3">
-            <Label htmlFor="opacity-slider" className="text-xs font-medium text-muted-foreground">투명도</Label>
+            <Label htmlFor="opacity-slider" className="text-xs font-medium text-muted-foreground">색상 투명도</Label>
             <Slider
               id="opacity-slider"
               min={0}
@@ -133,7 +144,7 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
             </div>
             <ScrollArea className="h-48">
               <div className="grid grid-cols-2 gap-2">
-                {backgroundImages.map(image => (
+                {allImages.map(image => (
                   <button
                     key={image.id}
                     className="relative aspect-video w-full rounded-md overflow-hidden group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -147,6 +158,9 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
                       data-ai-hint={image.imageHint}
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                    {image.id.startsWith('uploaded-') && (
+                       <p className="absolute bottom-1 right-1 text-white text-[10px] bg-black/50 px-1 rounded-sm">{image.description}</p>
+                    )}
                   </button>
                 ))}
               </div>
