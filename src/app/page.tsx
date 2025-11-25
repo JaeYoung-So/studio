@@ -169,6 +169,7 @@ export default function Home() {
   };
   
   const handleCategorySelect = (category: string) => {
+    alert(`'${category}'를 눌렀습니다.`);
     setSelectedCategory(category);
   };
 
@@ -240,30 +241,28 @@ export default function Home() {
 
   const filteredMemos = memos.filter(memo => {
     // 1. Category filter
-    let categoryMatch = false;
-    if (selectedCategory === t('all')) {
-      categoryMatch = true;
-    } else if (selectedCategory === t('uncategorized')) {
-      categoryMatch = !memo.category;
-    } else {
-      categoryMatch = memo.category === selectedCategory;
-    }
+    const categoryMatch = (() => {
+        if (selectedCategory === t('all')) return true;
+        if (selectedCategory === t('uncategorized')) return !memo.category;
+        return memo.category === selectedCategory;
+    })();
 
     if (!categoryMatch) {
-      return false;
+        return false;
     }
-    
+
     // 2. Search term filter (applied on top of category filter)
     if (!searchTerm) {
-      return true; // No search term, so just return the category-filtered result
+        return true; // No search term, so just return the category-filtered result
     }
+
     const term = searchTerm.toLowerCase();
     const titleMatch = memo.title?.toLowerCase().includes(term);
     const contentMatch = memo.content?.toLowerCase().includes(term);
     const dateMatch = format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term);
-    
+
     return titleMatch || contentMatch || dateMatch;
-  });
+});
 
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
