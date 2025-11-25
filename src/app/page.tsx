@@ -239,32 +239,29 @@ export default function Home() {
   };
 
   const filteredMemos = memos.filter(memo => {
-    // 1. Category Filter
-    let categoryMatch = false;
-    if (selectedCategory === t('all')) {
-      categoryMatch = true;
-    } else if (selectedCategory === t('uncategorized')) {
-      categoryMatch = !memo.category;
-    } else {
-      categoryMatch = memo.category === selectedCategory;
-    }
+    // Category Filter
+    const categoryMatch =
+      selectedCategory === t('all')
+        ? true
+        : selectedCategory === t('uncategorized')
+        ? !memo.category
+        : memo.category === selectedCategory;
 
     if (!categoryMatch) {
       return false;
     }
-    
-    // 2. Search Term Filter
+
+    // Search Term Filter
     if (!searchTerm) {
-      return true; // No search term, so it's a match
+      return true;
     }
 
     const term = searchTerm.toLowerCase();
-    const searchTermMatch = (
+    const searchTermMatch =
       (memo.title && memo.title.toLowerCase().includes(term)) ||
       (memo.content && memo.content.toLowerCase().includes(term)) ||
-      (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term))
-    );
-    
+      (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term));
+
     return searchTermMatch;
   });
 
