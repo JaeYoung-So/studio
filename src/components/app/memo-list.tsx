@@ -26,9 +26,10 @@ interface MemoListProps {
   onUpdateMemo: (memo: Memo) => void;
   onDragEnd: (event: any) => void;
   images: ImagePlaceholder[];
+  t: (key: any) => string;
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, onDragEnd, images }: MemoListProps) {
+export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, onDragEnd, images, t }: MemoListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -39,9 +40,9 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
   const filteredMemos = memos
     .filter(memo => {
       const categoryMatch =
-        selectedCategory === '전체' ||
+        selectedCategory === t('all') ||
         memo.category === selectedCategory ||
-        (selectedCategory === '미분류' && !memo.category);
+        (selectedCategory === t('uncategorized') && !memo.category);
 
       const searchMatch =
         searchTerm === '' ||
@@ -54,13 +55,13 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
         <FileQuestion className="h-16 w-16 mb-4" />
-        <h2 className="text-xl font-semibold font-headline">메모 없음</h2>
-        <p>새 메모를 추가하거나 다른 카테고리를 확인해 보세요.</p>
+        <h2 className="text-xl font-semibold font-headline">{t('noMemosTitle')}</h2>
+        <p>{t('noMemosDesc')}</p>
       </div>
     );
   }
 
-  const sortedMemos = selectedCategory === '전체' && searchTerm === '' 
+  const sortedMemos = selectedCategory === t('all') && searchTerm === '' 
   ? memos
   : filteredMemos;
 
@@ -76,7 +77,7 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {sortedMemos.map(memo => (
-                    <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} />
+                    <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} t={t} />
                 ))}
             </div>
         </SortableContext>

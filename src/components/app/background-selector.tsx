@@ -31,6 +31,7 @@ interface BackgroundSelectorProps {
   onImageUpload: (imageDataUrl: string) => void;
   images: ImagePlaceholder[];
   onImageDelete: (imageId: string) => void;
+  t: (key: any) => string;
 }
 
 export default function BackgroundSelector({ 
@@ -41,6 +42,7 @@ export default function BackgroundSelector({
   onImageUpload,
   images,
   onImageDelete,
+  t
 }: BackgroundSelectorProps) {
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
 
@@ -83,16 +85,16 @@ export default function BackgroundSelector({
     <>
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="배경 변경">
+        <Button variant="ghost" size="icon" aria-label={t('changeBackground')}>
           <ImageIcon className="h-5 w-5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none font-headline">배경 선택</h4>
+            <h4 className="font-medium leading-none font-headline">{t('selectBackground')}</h4>
             <p className="text-sm text-muted-foreground">
-              앱의 배경을 꾸며보세요.
+              {t('selectBackgroundDesc')}
             </p>
           </div>
           
@@ -100,7 +102,7 @@ export default function BackgroundSelector({
             <div className="flex items-center mb-2">
               <Palette className="h-4 w-4 mr-2 text-muted-foreground" />
               <p className="text-xs font-medium text-muted-foreground">
-                색상
+                {t('color')}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -127,7 +129,7 @@ export default function BackgroundSelector({
           <Separator />
           
           <div className="space-y-3">
-            <Label htmlFor="opacity-slider" className="text-xs font-medium text-muted-foreground">색상 투명도</Label>
+            <Label htmlFor="opacity-slider" className="text-xs font-medium text-muted-foreground">{t('colorOpacity')}</Label>
             <Slider
               id="opacity-slider"
               min={0}
@@ -145,7 +147,7 @@ export default function BackgroundSelector({
                <div className="flex items-center">
                 <ImageIcon className="h-4 w-4 mr-2 text-muted-foreground" />
                 <p className="text-xs font-medium text-muted-foreground">
-                  이미지
+                  {t('image')}
                 </p>
                </div>
                 <input
@@ -157,7 +159,7 @@ export default function BackgroundSelector({
                 />
                 <Button variant="outline" size="sm" onClick={handleImageUploadClick}>
                   <Upload className="h-3 w-3 mr-2" />
-                  업로드
+                  {t('upload')}
                 </Button>
             </div>
             <ScrollArea className="h-48">
@@ -179,7 +181,7 @@ export default function BackgroundSelector({
                       <div className="absolute inset-0 bg-black/20 group-hover/button:bg-black/40 transition-colors" />
                     </button>
                     {image.id.startsWith('uploaded-') && (
-                      <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{image.description}</p>
+                      <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{t('uploaded')}</p>
                     )}
                     <AlertDialogTrigger asChild>
                       <Button
@@ -205,13 +207,13 @@ export default function BackgroundSelector({
     <AlertDialog open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>이미지 삭제</AlertDialogTitle>
+            <AlertDialogTitle>{t('deleteImageTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              이 이미지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+              {t('deleteImageDesc')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setImageToDelete(null)}>취소</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setImageToDelete(null)}>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (imageToDelete) {
@@ -220,7 +222,7 @@ export default function BackgroundSelector({
                 setImageToDelete(null);
               }}
             >
-              삭제
+              {t('delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

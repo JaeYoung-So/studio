@@ -2,7 +2,7 @@
 
 import { Sidebar, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { ScrollArea } from '../ui/scroll-area';
-import { cn, colorToRgba } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -26,12 +26,17 @@ interface AppSidebarComposition {
   Categories: typeof AppSidebarCategories;
 }
 
-const AppSidebar: React.FC<React.PropsWithChildren<{}>> & AppSidebarComposition = ({ children }) => {
+interface AppSidebarProps {
+    children: React.ReactNode;
+    t: (key: any) => string;
+}
+
+const AppSidebar: React.FC<AppSidebarProps> & AppSidebarComposition = ({ children, t }) => {
   return (
     <Sidebar className={cn('border-none')}>
       <ScrollArea className="h-full rounded-lg bg-white">
         <SidebarHeader className="bg-transparent">
-          <h2 className="text-lg font-headline font-semibold">새 메모</h2>
+          <h2 className="text-lg font-headline font-semibold">{t('newMemo')}</h2>
           {children}
         </SidebarHeader>
       </ScrollArea>
@@ -47,6 +52,7 @@ interface AppSidebarCategoriesProps {
   selectedCategory: string;
   backgroundColor?: string;
   backgroundOpacity: number;
+  t: (key: any, ...args: any[]) => string;
 }
 
 function AppSidebarCategories({ 
@@ -55,8 +61,10 @@ function AppSidebarCategories({
   onDeleteCategory,
   onSelectCategory, 
   selectedCategory, 
+  t,
 }: AppSidebarCategoriesProps) {
-  const allCategories = ['전체', ...categories];
+  const allString = t('all');
+  const allCategories = [allString, ...categories];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
 
@@ -64,24 +72,24 @@ function AppSidebarCategories({
     if (newCategory.trim() === '') {
       toast({
         variant: 'destructive',
-        title: '오류',
-        description: '카테고리 이름을 입력해주세요.',
+        title: t('error'),
+        description: t('categoryNameRequired'),
       });
       return;
     }
     if (categories.includes(newCategory.trim())) {
       toast({
         variant: 'destructive',
-        title: '오류',
-        description: '이미 존재하는 카테고리입니다.',
+        title: t('error'),
+        description: t('categoryExists'),
       });
       return;
     }
     onAddCategory(newCategory.trim());
     setNewCategory('');
     toast({
-      title: '성공',
-      description: `'${newCategory.trim()}' 카테고리가 추가되었습니다.`,
+      title: t('success'),
+      description: t('categoryAdded', newCategory.trim()),
     });
   };
 
@@ -89,7 +97,7 @@ function AppSidebarCategories({
     <SidebarContent>
         <SidebarGroup>
         <div className="flex justify-between items-center pr-2">
-            <SidebarGroupLabel>카테고리</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('categories')}</SidebarGroupLabel>
             <Popover>
             <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -98,15 +106,15 @@ function AppSidebarCategories({
             </PopoverTrigger>
             <PopoverContent className="w-60">
                 <div className="space-y-2">
-                <p className="font-medium">새 카테고리 추가</p>
+                <p className="font-medium">{t('addNewCategory')}</p>
                 <div className="flex gap-2">
                     <Input 
                     value={newCategory} 
                     onChange={(e) => setNewCategory(e.target.value)} 
-                    placeholder="카테고리 이름"
+                    placeholder={t('newCategoryName')}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
                     />
-                    <Button onClick={handleAddCategory}>추가</Button>
+                    <Button onClick={handleAddCategory}>{t('add')}</Button>
                 </div>
                 </div>
             </PopoverContent>
@@ -114,17 +122,18 @@ function AppSidebarCategories({
         </div>
         <SidebarMenu>
             {allCategories.map(category => (
-            <SidebarMenuItem key={category} className="group/item relative">
-                <SidebarMenuButton
-                onClick={() => onSelectCategory(category)}
-                isActive={selectedCategory === category}
-                className="w-full justify-start"
-                >
-                {category}
-                </SidebarMenuButton>
-                {category !== '전체' && (
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
+             <AlertDialog key={category}>
+                <SidebarMenuItem className="group/item relative">
+                    <SidebarMenuButton
+                        onClick={() => onSelectCategory(category)}
+                        isActive={selectedCategory === category}
+                        className="w-full justify-start"
+                    >
+                    {category}
+                    </SidebarMenuButton>
+                    {category !== allString && (
+                        <>
+                         <AlertDialogTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -136,25 +145,26 @@ function AppSidebarCategories({
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>카테고리 삭제</AlertDialogTitle>
+                            <AlertDialogTitle>{t('deleteCategoryTitle')}</AlertDialogTitle>
                             <AlertDialogDescription>
-                              '{category}' 카테고리를 정말로 삭제하시겠습니까? 이 카테고리에 속한 메모들은 '미분류' 상태가 됩니다.
+                              {t('deleteCategoryDesc', category)}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>취소</AlertDialogCancel>
+                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => {
                                   onDeleteCategory(category);
                               }}
                             >
-                              삭제
+                              {t('delete')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
-                    </AlertDialog>
-                )}
-            </SidebarMenuItem>
+                       </>
+                    )}
+                </SidebarMenuItem>
+            </AlertDialog>
             ))}
         </SidebarMenu>
         </SidebarGroup>

@@ -10,6 +10,7 @@ import { INITIAL_PLACEHOLDER_IMAGES, type ImagePlaceholder } from '@/lib/placeho
 import { colorToRgba } from '@/lib/utils';
 import { arrayMove } from '@dnd-kit/sortable';
 import NewMemoForm from '@/components/app/new-memo-form';
+import { useTranslation, type Language, translations } from '@/lib/i18n';
 
 const initialMemos: Memo[] = [
   {
@@ -47,9 +48,10 @@ const initialMemos: Memo[] = [
 const INITIAL_CATEGORIES = ['일상', '업무', '아이디어', '중요'];
 
 export default function Home() {
+  const { t, language, setLanguage } = useTranslation();
   const [memos, setMemos] = useState<Memo[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [selectedCategory, setSelectedCategory] = useState(t('all'));
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
@@ -57,20 +59,32 @@ export default function Home() {
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
   const [images, setImages] = useState<ImagePlaceholder[]>(INITIAL_PLACEHOLDER_IMAGES);
 
+  useEffect(() => {
+    document.title = t('title');
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', t('description'));
+    }
+  }, [language, t]);
 
   useEffect(() => {
     const storedMemos = localStorage.getItem('memos');
     if (storedMemos) {
       setMemos(JSON.parse(storedMemos).map((memo: any) => ({...memo, createdAt: new Date(memo.createdAt)})));
     } else {
-      setMemos(initialMemos);
+       setMemos(initialMemos.map(memo => ({
+        ...memo,
+        title: language === 'en' ? `Meeting Prep ${memo.id}` : memo.title,
+        content: language === 'en' ? `Content for memo ${memo.id}` : memo.content,
+        category: language === 'en' ? { '업무': 'Work', '일상': 'Daily', '아이디어': 'Idea' }[memo.category || ''] || 'Misc' : memo.category,
+      })));
     }
     
     const storedCategories = localStorage.getItem('categories');
     if (storedCategories) {
       setCategories(JSON.parse(storedCategories));
     } else {
-      setCategories(INITIAL_CATEGORIES);
+       setCategories(language === 'en' ? ['Daily', 'Work', 'Idea', 'Important'] : INITIAL_CATEGORIES);
     }
 
     const storedBgUrl = localStorage.getItem('backgroundUrl');
@@ -88,7 +102,7 @@ export default function Home() {
     } else {
       setImages(INITIAL_PLACEHOLDER_IMAGES);
     }
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     if (memos.length > 0) {
@@ -115,12 +129,21 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('images', JSON.stringify(images));
   }, [images]);
+  
+  useEffect(() => {
+    setSelectedCategory(t('all'));
+  }, [t]);
+
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
+    const newMemoData: Omit<Memo, 'id' | 'createdAt'> = {...memo};
+    if (!newMemoData.imageUrl) {
+        delete newMemoData.imageUrl;
+    }
     const newMemo: Memo = {
       id: new Date().toISOString(),
       createdAt: new Date(),
-      ...memo
+      ...newMemoData
     };
     setMemos(prevMemos => [newMemo, ...prevMemos]);
   };
@@ -145,7 +168,7 @@ export default function Home() {
       memo.category === categoryToDelete ? { ...memo, category: undefined } : memo
     ));
     if (selectedCategory === categoryToDelete) {
-      setSelectedCategory('전체');
+      setSelectedCategory(t('all'));
     }
   };
   
@@ -170,7 +193,7 @@ export default function Home() {
   const handleImageUpload = (imageDataUrl: string) => {
     const newImage: ImagePlaceholder = {
       id: `uploaded-${new Date().getTime()}`,
-      description: '업로드됨',
+      description: t('uploaded'),
       imageUrl: imageDataUrl,
       imageHint: 'uploaded'
     };
@@ -204,8 +227,8 @@ export default function Home() {
 
   return (
     <SidebarProvider>
-      <AppSidebar>
-        <NewMemoForm onAddMemo={handleAddMemo} categories={categories} images={images} />
+      <AppSidebar t={t}>
+        <NewMemoForm onAddMemo={handleAddMemo} categories={categories} images={images} t={t}/>
         <AppSidebar.Categories 
             categories={categories}
             onAddCategory={handleAddCategory}
@@ -214,6 +237,7 @@ export default function Home() {
             selectedCategory={selectedCategory}
             backgroundColor={backgroundColor}
             backgroundOpacity={backgroundOpacity}
+            t={t}
         />
       </AppSidebar>
       <SidebarInset
@@ -241,6 +265,9 @@ export default function Home() {
             onImageUpload={handleImageUpload}
             images={images}
             onImageDelete={handleImageDelete}
+            t={t}
+            language={language}
+            setLanguage={(lang) => setLanguage(lang as Language)}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList
@@ -251,6 +278,7 @@ export default function Home() {
               onUpdateMemo={handleUpdateMemo}
               onDragEnd={handleDragEnd}
               images={images}
+              t={t}
             />
           </main>
         </div>

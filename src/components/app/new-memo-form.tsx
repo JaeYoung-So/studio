@@ -32,9 +32,10 @@ interface NewMemoFormProps {
   onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
   categories: string[];
   images: ImagePlaceholder[];
+  t: (key: any, ...args: any[]) => string;
 }
 
-export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFormProps) {
+export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMemoFormProps) {
   const { toast } = useToast();
   const [isVoice, setIsVoice] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -100,8 +101,8 @@ export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFo
         if (typeof e.target?.result === 'string') {
           form.setValue('imageUrl', e.target.result);
           toast({
-            title: "이미지 추가됨",
-            description: "이미지가 메모에 추가되었습니다.",
+            title: t('imageAdded'),
+            description: t('imageAddedDesc'),
           });
         }
       };
@@ -131,9 +132,9 @@ export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFo
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>제목</FormLabel>
+              <FormLabel>{t('memoTitle')}</FormLabel>
               <FormControl>
-                <Input placeholder="메모 제목" {...field} />
+                <Input placeholder={t('memoTitle')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -144,9 +145,9 @@ export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFo
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>내용</FormLabel>
+              <FormLabel>{t('memoContent')}</FormLabel>
               <FormControl>
-                <Textarea placeholder="메모 내용" className="resize-none" {...field} />
+                <Textarea placeholder={t('memoContent')} className="resize-none" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -157,15 +158,15 @@ export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFo
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>카테고리</FormLabel>
+              <FormLabel>{t('category')}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ''}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="카테고리 선택 (선택 사항)" />
+                    <SelectValue placeholder={t('selectCategory')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="uncategorized">선택 안함</SelectItem>
+                  <SelectItem value="uncategorized">{t('selectNone')}</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
@@ -182,36 +183,39 @@ export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFo
           className="hidden"
           accept="image/*"
         />
-        <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen}>
-          <div className="flex justify-between items-center gap-2">
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
-                    <ImagePlus className="h-4 w-4" />
-                </Button>
-                <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">
-                    <Mic className="h-4 w-4" />
-                </Button>
-              </div>
-              <CollapsibleTrigger asChild>
-                <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
-                    <Palette className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent>
-            <div className="mt-4 bg-card p-4 rounded-md border">
-                <MemoToolbar
-                    memo={form.watch()}
-                    onIconChange={handleIconChange}
-                    onCoverImageChange={handleCoverImageChange}
-                    onRemoveCoverImage={handleRemoveCoverImage}
-                    images={images}
-                    isNewMemo={true}
-                />
+        <div className="flex justify-between items-center gap-2">
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
+                  <ImagePlus className="h-4 w-4" />
+              </Button>
+              <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label={t('recordVoiceMemo')}>
+                  <Mic className="h-4 w-4" />
+              </Button>
             </div>
-          </CollapsibleContent>
-        </Collapsible>
-        <Button type="submit" className="w-full">메모 추가</Button>
+            <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} asChild>
+              <>
+                <CollapsibleTrigger asChild>
+                  <Button type="button" variant="outline" size="icon" aria-label={t('decorate')}>
+                      <Palette className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="mt-4 bg-card p-4 rounded-md border">
+                      <MemoToolbar
+                          memo={form.watch()}
+                          onIconChange={handleIconChange}
+                          onCoverImageChange={handleCoverImageChange}
+                          onRemoveCoverImage={handleRemoveCoverImage}
+                          images={images}
+                          isNewMemo={true}
+                          t={t}
+                      />
+                  </div>
+                </CollapsibleContent>
+              </>
+            </Collapsible>
+        </div>
+        <Button type="submit" className="w-full">{t('addMemo')}</Button>
       </form>
     </Form>
   );

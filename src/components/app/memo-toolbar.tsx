@@ -37,6 +37,7 @@ interface MemoToolbarProps {
   images: ImagePlaceholder[];
   onUpdate?: (memo: Partial<Memo>) => void;
   isNewMemo?: boolean;
+  t: (key: any, ...args: any[]) => string;
 }
 
 export function MemoToolbar({
@@ -46,7 +47,8 @@ export function MemoToolbar({
   onRemoveCoverImage,
   images,
   onUpdate,
-  isNewMemo = false
+  isNewMemo = false,
+  t,
 }: MemoToolbarProps) {
 
   const icons = [
@@ -76,8 +78,8 @@ export function MemoToolbar({
           onCoverImageChange(e.target.result);
           if (!isNewMemo) {
             toast({
-              title: "커버 이미지 변경됨",
-              description: "새로운 커버 이미지가 적용되었습니다.",
+              title: t('coverImageChanged'),
+              description: t('newCoverImageApplied'),
             });
           }
         }
@@ -93,19 +95,29 @@ export function MemoToolbar({
     ? { className: "grid gap-4 mt-4" }
     : { className: "w-80", align: "end" as "end" };
 
+  const currentMemoImages = [
+    ...(memo.imageUrl ? [{ id: 'current-image', imageUrl: memo.imageUrl, description: 'Current', imageHint: 'current' }] : []),
+    ...(memo.coverImageUrl && memo.imageUrl !== memo.coverImageUrl ? [{ id: 'current-cover', imageUrl: memo.coverImageUrl, description: 'Current Cover', imageHint: 'current cover' }] : [])
+  ];
+
+  const combinedImages = [
+    ...currentMemoImages,
+    ...images.filter(img => img.imageUrl !== memo.imageUrl && img.imageUrl !== memo.coverImageUrl)
+  ];
+
 
   const toolbarContent = (
     <div className="grid gap-4">
       <div className="space-y-2">
-        <h4 className="font-medium leading-none">꾸미기</h4>
+        <h4 className="font-medium leading-none">{t('decorating')}</h4>
         <p className="text-sm text-muted-foreground">
-          아이콘과 커버 이미지로 메모를 꾸며보세요.
+          {t('decorateMemo')}
         </p>
       </div>
 
       <div>
         <p className="text-xs font-medium text-muted-foreground mb-2">
-          아이콘
+          {t('icon')}
         </p>
         <div className="flex flex-wrap gap-2">
           {icons.map(icon => (
@@ -128,7 +140,7 @@ export function MemoToolbar({
       <div>
         <div className="flex justify-between items-center mb-2">
           <p className="text-xs font-medium text-muted-foreground">
-            커버
+            {t('cover')}
           </p>
           <div className='flex items-center'>
              <input
@@ -140,7 +152,7 @@ export function MemoToolbar({
             />
             <Button type="button" variant="ghost" size="sm" className="h-7" onClick={handleImageUploadClick}>
               <Upload className="h-3 w-3 mr-1" />
-              업로드
+              {t('upload')}
             </Button>
             <Button
                 type="button"
@@ -150,13 +162,13 @@ export function MemoToolbar({
                 onClick={onRemoveCoverImage}
               >
                 <Trash2 className="h-3 w-3 mr-1" />
-                삭제
+                {t('remove')}
               </Button>
           </div>
         </div>
         <ScrollArea className="h-40">
           <div className="grid grid-cols-2 gap-2">
-            {images.map(image => (
+            {combinedImages.map(image => (
               <button
                 key={image.id}
                 type="button"
@@ -176,7 +188,7 @@ export function MemoToolbar({
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
                  {image.id.startsWith('uploaded-') && (
-                    <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{image.description}</p>
+                    <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{t('uploaded')}</p>
                  )}
               </button>
             ))}

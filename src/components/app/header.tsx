@@ -7,6 +7,8 @@ import { SidebarTrigger } from '../ui/sidebar';
 import { AppLogo } from '../icons';
 import { cn, colorToRgba } from '@/lib/utils';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
+import LanguageSelector from './language-selector';
+import { Language } from '@/lib/i18n';
 
 interface HeaderProps {
   onSearch: (term: string) => void;
@@ -18,6 +20,9 @@ interface HeaderProps {
   onImageUpload: (imageDataUrl: string) => void;
   images: ImagePlaceholder[];
   onImageDelete: (imageId: string) => void;
+  t: (key: any, ...args: any[]) => string;
+  language: Language;
+  setLanguage: (lang: Language) => void;
 }
 
 export default function Header({ 
@@ -30,6 +35,9 @@ export default function Header({
   onImageUpload,
   images,
   onImageDelete,
+  t,
+  language,
+  setLanguage
 }: HeaderProps) {
 
   const headerStyle = backgroundColor
@@ -47,7 +55,7 @@ export default function Header({
       <div className="flex items-center gap-2">
          <SidebarTrigger className="md:hidden" />
          <AppLogo className="h-8 w-8 text-primary" />
-         <h1 className="text-xl font-bold font-headline hidden md:block">휙휙 메모</h1>
+         <h1 className="text-xl font-bold font-headline hidden md:block">{t('title')}</h1>
       </div>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <form className="ml-auto flex-1 sm:flex-initial">
@@ -55,13 +63,14 @@ export default function Header({
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="메모 검색..."
+              placeholder={t('searchMemos')}
               className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
               onChange={(e) => onSearch(e.target.value)}
-              aria-label="메모 검색"
+              aria-label={t('searchMemos')}
             />
           </div>
         </form>
+        <LanguageSelector language={language} setLanguage={setLanguage} t={t} />
         <BackgroundSelector 
           onBackgroundChange={onBackgroundChange} 
           onBackgroundColorChange={onBackgroundColorChange} 
@@ -70,6 +79,7 @@ export default function Header({
           onImageUpload={onImageUpload}
           images={images}
           onImageDelete={onImageDelete}
+          t={t}
         />
       </div>
     </header>

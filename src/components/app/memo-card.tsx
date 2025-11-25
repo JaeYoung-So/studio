@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Mic, Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music } from 'lucide-react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { ko, enUS } from 'date-fns/locale';
 import { MemoToolbar } from './memo-toolbar';
 import * as React from 'react';
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
@@ -25,12 +25,14 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
+import { Language } from '@/lib/i18n';
 
 interface MemoCardProps {
   memo: Memo;
   onDelete: (id: string) => void;
   onUpdate: (memo: Memo) => void;
   images: ImagePlaceholder[];
+  t: (key: any, ...args: any[]) => string;
 }
 
 const iconMap: { [key: string]: React.ElementType } = {
@@ -45,7 +47,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 
-export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardProps) {
+export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCardProps) {
     const {
         attributes,
         listeners,
@@ -77,6 +79,14 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
     const handleRemoveCoverImage = () => {
         onUpdate({ ...memo, coverImageUrl: undefined });
     }
+    
+    const [lang, setLang] = React.useState<Language>('ko');
+    React.useEffect(() => {
+        const storedLang = localStorage.getItem('language') as Language;
+        if (storedLang) {
+            setLang(storedLang);
+        }
+    }, []);
 
   return (
     <Card 
@@ -132,6 +142,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                     onRemoveCoverImage={handleRemoveCoverImage}
                     images={images}
                     onUpdate={onUpdate}
+                    t={t}
                 />
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -139,21 +150,21 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                          aria-label="메모 삭제"
+                          aria-label={t('deleteMemoTitle')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                        <AlertDialogTitle>메모 삭제</AlertDialogTitle>
+                        <AlertDialogTitle>{t('deleteMemoTitle')}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            이 메모를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                            {t('deleteMemoDesc')}
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                        <AlertDialogCancel>취소</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => onDelete(memo.id)}>삭제</AlertDialogAction>
+                        <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(memo.id)}>{t('delete')}</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
@@ -168,12 +179,12 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
             {memo.isVoiceMemo && (
                 <div className="flex items-center gap-1">
                 <Mic className="h-4 w-4" />
-                <span>음성</span>
+                <span>{t('voice')}</span>
                 </div>
             )}
             </div>
             <span>
-            {formatDistanceToNow(new Date(memo.createdAt), { addSuffix: true, locale: ko })}
+            {formatDistanceToNow(new Date(memo.createdAt), { addSuffix: true, locale: lang === 'ko' ? ko : enUS })}
             </span>
         </CardFooter>
       </div>
