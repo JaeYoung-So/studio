@@ -5,11 +5,10 @@ import type { Memo } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus, Palette } from 'lucide-react';
+import { Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { ko, enUS } from 'date-fns/locale';
-import { MemoToolbar } from './memo-toolbar';
 import * as React from 'react';
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { useSortable } from '@dnd-kit/sortable';
@@ -33,6 +32,7 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleTrigger } from '../ui/collapsible';
+import { MemoToolbar } from './memo-toolbar';
 
 interface MemoCardProps {
   memo: Memo;
@@ -299,9 +299,9 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                               <ImagePlus className="h-4 w-4" />
                           </Button>
                           <CollapsibleTrigger asChild>
-                              <Button type="button" variant="outline" size="icon" className="gap-2">
-                                  <Palette className="h-4 w-4" />
-                              </Button>
+                            <Button type="button" variant="outline" size="icon">
+                                <Palette className="h-4 w-4" />
+                            </Button>
                           </CollapsibleTrigger>
                       </div>
                       <MemoToolbar
@@ -366,7 +366,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                   )}
               </div>
               <span>
-              {format(new Date(memo.createdAt), 'yyyy-MM-dd-HH-mm-ss')}
+              {format(new Date(memo.createdAt), lang === 'ko' ? 'yyyy년 M월 d일' : 'PP', { locale: lang === 'ko' ? ko : enUS })}
               </span>
           </CardFooter>
       </div>
