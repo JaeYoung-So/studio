@@ -7,13 +7,17 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
 
 interface BackgroundSelectorProps {
   onBackgroundChange: (url: string) => void;
   onBackgroundColorChange: (color: string) => void;
+  onBackgroundOpacityChange: (opacity: number) => void;
+  backgroundOpacity: number;
 }
 
-export default function BackgroundSelector({ onBackgroundChange, onBackgroundColorChange }: BackgroundSelectorProps) {
+export default function BackgroundSelector({ onBackgroundChange, onBackgroundColorChange, onBackgroundOpacityChange, backgroundOpacity }: BackgroundSelectorProps) {
   const backgroundImages = PlaceHolderImages.filter(p => p.id.startsWith('bg-'));
   const backgroundColors = [
     'hsl(195 53% 91%)', // default light background
@@ -73,6 +77,20 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
           
           <Separator />
           
+          <div className="space-y-3">
+            <Label htmlFor="opacity-slider" className="text-xs font-medium text-muted-foreground">투명도</Label>
+            <Slider
+              id="opacity-slider"
+              min={0}
+              max={1}
+              step={0.1}
+              value={[backgroundOpacity]}
+              onValueChange={(value) => onBackgroundOpacityChange(value[0])}
+            />
+          </div>
+
+          <Separator />
+
           <div>
             <div className="flex items-center mb-2">
                <ImageIcon className="h-4 w-4 mr-2 text-muted-foreground" />

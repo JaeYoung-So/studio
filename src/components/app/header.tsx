@@ -5,19 +5,28 @@ import { Search } from 'lucide-react';
 import BackgroundSelector from './background-selector';
 import { SidebarTrigger } from '../ui/sidebar';
 import { AppLogo } from '../icons';
-import { cn, hslToRgba } from '@/lib/utils';
+import { cn, colorToRgba } from '@/lib/utils';
 
 interface HeaderProps {
   onSearch: (term: string) => void;
   onBackgroundChange: (url: string) => void;
   onBackgroundColorChange: (color: string) => void;
+  onBackgroundOpacityChange: (opacity: number) => void;
   backgroundColor?: string;
+  backgroundOpacity: number;
 }
 
-export default function Header({ onSearch, onBackgroundChange, onBackgroundColorChange, backgroundColor }: HeaderProps) {
+export default function Header({ 
+  onSearch, 
+  onBackgroundChange, 
+  onBackgroundColorChange,
+  onBackgroundOpacityChange, 
+  backgroundColor,
+  backgroundOpacity
+}: HeaderProps) {
 
   const headerStyle = backgroundColor
-    ? { backgroundColor: hslToRgba(backgroundColor, 0.5) }
+    ? { backgroundColor: colorToRgba(backgroundColor, backgroundOpacity > 0.3 ? backgroundOpacity - 0.3 : 0.1) }
     : {};
     
   return (
@@ -46,7 +55,12 @@ export default function Header({ onSearch, onBackgroundChange, onBackgroundColor
             />
           </div>
         </form>
-        <BackgroundSelector onBackgroundChange={onBackgroundChange} onBackgroundColorChange={onBackgroundColorChange} />
+        <BackgroundSelector 
+          onBackgroundChange={onBackgroundChange} 
+          onBackgroundColorChange={onBackgroundColorChange} 
+          onBackgroundOpacityChange={onBackgroundOpacityChange}
+          backgroundOpacity={backgroundOpacity}
+        />
       </div>
     </header>
   );

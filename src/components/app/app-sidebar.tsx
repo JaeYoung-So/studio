@@ -5,20 +5,21 @@ import { Sidebar, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupLabel
 import NewMemoForm from './new-memo-form';
 import { CATEGORIES } from '@/lib/types';
 import { ScrollArea } from '../ui/scroll-area';
-import { cn, hslToRgba } from '@/lib/utils';
+import { cn, colorToRgba } from '@/lib/utils';
 
 interface AppSidebarProps {
   onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
   onSelectCategory: (category: string) => void;
   selectedCategory: string;
   backgroundColor?: string;
+  backgroundOpacity: number;
 }
 
-export default function AppSidebar({ onAddMemo, onSelectCategory, selectedCategory, backgroundColor }: AppSidebarProps) {
+export default function AppSidebar({ onAddMemo, onSelectCategory, selectedCategory, backgroundColor, backgroundOpacity }: AppSidebarProps) {
   const allCategories = ['전체', ...CATEGORIES];
 
   const scrollAreaStyle = backgroundColor
-    ? { backgroundColor: hslToRgba(backgroundColor, 0.9) }
+    ? { backgroundColor: colorToRgba(backgroundColor, backgroundOpacity > 0.2 ? backgroundOpacity - 0.1 : 0.1) }
     : {};
 
   return (

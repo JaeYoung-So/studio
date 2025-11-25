@@ -8,6 +8,7 @@ import Header from '@/components/app/header';
 import MemoList from '@/components/app/memo-list';
 import { CATEGORIES } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { colorToRgba } from '@/lib/utils';
 
 const initialMemos: Memo[] = [
   {
@@ -49,6 +50,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [backgroundUrl, setBackgroundUrl] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('');
+  const [backgroundOpacity, setBackgroundOpacity] = useState(1);
 
   useEffect(() => {
     const storedMemos = localStorage.getItem('memos');
@@ -66,6 +68,10 @@ export default function Home() {
     if(storedBgColor) {
       setBackgroundColor(storedBgColor);
     }
+    const storedBgOpacity = localStorage.getItem('backgroundOpacity');
+    if (storedBgOpacity) {
+      setBackgroundOpacity(parseFloat(storedBgOpacity));
+    }
   }, []);
 
   useEffect(() => {
@@ -81,6 +87,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('backgroundColor', backgroundColor);
   }, [backgroundColor]);
+
+  useEffect(() => {
+    localStorage.setItem('backgroundOpacity', String(backgroundOpacity));
+  }, [backgroundOpacity]);
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemo: Memo = {
@@ -114,7 +124,12 @@ export default function Home() {
     setBackgroundColor(color);
     setBackgroundUrl('');
   }
+  
+  const handleBackgroundOpacityChange = (opacity: number) => {
+    setBackgroundOpacity(opacity);
+  };
 
+  const finalBackgroundColor = backgroundColor ? colorToRgba(backgroundColor, backgroundOpacity) : 'transparent';
 
   return (
     <SidebarProvider>
@@ -123,12 +138,13 @@ export default function Home() {
         onSelectCategory={handleCategorySelect}
         selectedCategory={selectedCategory}
         backgroundColor={backgroundColor}
+        backgroundOpacity={backgroundOpacity}
       />
       <SidebarInset
         className="transition-all duration-300 ease-in-out"
         style={{ 
           backgroundImage: backgroundUrl ? `url(${backgroundUrl})` : 'none',
-          backgroundColor: backgroundColor ? backgroundColor : 'transparent',
+          backgroundColor: finalBackgroundColor,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -139,7 +155,9 @@ export default function Home() {
             onSearch={setSearchTerm}
             onBackgroundChange={handleBackgroundChange}
             onBackgroundColorChange={handleBackgroundColorChange}
+            onBackgroundOpacityChange={handleBackgroundOpacityChange}
             backgroundColor={backgroundColor}
+            backgroundOpacity={backgroundOpacity}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList
