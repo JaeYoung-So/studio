@@ -117,13 +117,11 @@ export default function Home() {
   
   const handleBackgroundChange = (url: string) => {
     setBackgroundUrl(url);
-    setBackgroundColor('');
-  }
+  };
   
   const handleBackgroundColorChange = (color: string) => {
     setBackgroundColor(color);
-    setBackgroundUrl('');
-  }
+  };
   
   const handleBackgroundOpacityChange = (opacity: number) => {
     setBackgroundOpacity(opacity);
