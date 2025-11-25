@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export const translations = {
   ko: {
-    title: '휙휙 메모',
+    title: 'MyWay 메모',
     description: '당신의 생각을 빠르게 기록하세요',
     newMemo: '새 메모',
     memoTitle: '메모 제목',
@@ -61,7 +61,7 @@ export const translations = {
     english: 'English',
   },
   en: {
-    title: 'Quick Memo',
+    title: 'MyWay Memo',
     description: 'Jot down your thoughts quickly.',
     newMemo: 'New Memo',
     memoTitle: 'Memo Title',

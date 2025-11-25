@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        <title>휙휙 메모</title>
+        <title>메모</title>
         <meta name="description" content="당신의 생각을 빠르게 기록하세요" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

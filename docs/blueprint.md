@@ -1,4 +1,4 @@
-# **App Name**: 휙휙 메모
+# **App Name**: MyWay 메모
 
 ## Core Features:
 

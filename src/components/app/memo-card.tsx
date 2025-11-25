@@ -93,7 +93,8 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
         ref={setNodeRef} 
         style={style}
         className={cn(
-            "flex flex-col overflow-hidden transition-shadow hover:shadow-xl duration-300 ease-in-out bg-card/80 backdrop-blur-sm touch-none"
+            "flex flex-col overflow-hidden transition-shadow hover:shadow-xl duration-300 ease-in-out bg-card/80 backdrop-blur-sm",
+            isDragging && "touch-none"
         )}
     >
       {(memo.coverImageUrl || memo.imageUrl || memo.icon) && (
