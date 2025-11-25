@@ -1,0 +1,136 @@
+'use client';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import type { Memo } from '@/lib/types';
+import { CATEGORIES } from '@/lib/types';
+import { ImagePlus, Mic } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useState } from 'react';
+
+const formSchema = z.object({
+  title: z.string().min(1, { message: '제목을 입력해주세요.' }).max(50),
+  content: z.string().min(1, { message: '내용을 입력해주세요.' }),
+  category: z.string().min(1, { message: '카테고리를 선택해주세요.' }),
+  imageUrl: z.string().optional(),
+  isVoiceMemo: z.boolean(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+interface NewMemoFormProps {
+  onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
+}
+
+export default function NewMemoForm({ onAddMemo }: NewMemoFormProps) {
+  const { toast } = useToast();
+  const [isVoice, setIsVoice] = useState(false);
+  const memoImages = PlaceHolderImages.filter(p => p.id.startsWith('memo-'));
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      content: '',
+      category: '',
+      imageUrl: '',
+      isVoiceMemo: false,
+    },
+  });
+
+  function onSubmit(values: FormValues) {
+    onAddMemo(values);
+    toast({
+      title: "메모 추가 완료",
+      description: `"${values.title}" 메모가 성공적으로 추가되었습니다.`,
+    });
+    form.reset();
+    setIsVoice(false);
+  }
+  
+  const handleToggleVoiceMemo = () => {
+    const newIsVoice = !form.getValues('isVoiceMemo');
+    form.setValue('isVoiceMemo', newIsVoice);
+    setIsVoice(newIsVoice);
+  };
+
+  const handleAddRandomImage = () => {
+    const randomImage = memoImages[Math.floor(Math.random() * memoImages.length)];
+    form.setValue('imageUrl', randomImage.imageUrl);
+     toast({
+      title: "이미지 추가됨",
+      description: `랜덤 이미지가 메모에 추가되었습니다.`,
+    });
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>제목</FormLabel>
+              <FormControl>
+                <Input placeholder="메모 제목" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>내용</FormLabel>
+              <FormControl>
+                <Textarea placeholder="메모 내용" className="resize-none" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>카테고리</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="카테고리 선택" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {CATEGORIES.map(category => (
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="flex gap-2">
+            <Button type="button" variant="outline" size="icon" onClick={handleAddRandomImage} aria-label="이미지 추가">
+                <ImagePlus className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">
+                <Mic className="h-4 w-4" />
+            </Button>
+        </div>
+        <Button type="submit" className="w-full">메모 추가</Button>
+      </form>
+    </Form>
+  );
+}

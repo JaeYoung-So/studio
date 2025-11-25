@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "memo-1",
+      "description": "A person working on a laptop in a cafe",
+      "imageUrl": "https://images.unsplash.com/photo-1573167507387-6b4b98cb7c13?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b3JrJTIwbWVldGluZ3xlbnwwfHx8fDE3NjQwMjg5MTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "work meeting"
+    },
+    {
+      "id": "memo-2",
+      "description": "A colorful display of fresh vegetables at a market",
+      "imageUrl": "https://images.unsplash.com/photo-1570197571499-166b36435e9f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxmcmVzaCUyMGZvb2R8ZW58MHx8fHwxNzY0MDI4OTE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fresh food"
+    },
+    {
+      "id": "memo-3",
+      "description": "A beautiful mountain landscape at sunrise",
+      "imageUrl": "https://images.unsplash.com/photo-1612676239016-41e2c92b8e06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwwfHx8fDE3NjM5MTY0NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mountain landscape"
+    },
+    {
+      "id": "memo-4",
+      "description": "A notebook with a pen on a wooden desk",
+      "imageUrl": "https://images.unsplash.com/photo-1689023542259-d1e58b32a5a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3cml0aW5nJTIwbm90ZXN8ZW58MHx8fHwxNzYzOTk3NzUzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "writing notes"
+    },
+    {
+      "id": "memo-5",
+      "description": "City skyline at night",
+      "imageUrl": "https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjaXR5JTIwbmlnaHR8ZW58MHx8fHwxNzYzOTE0NzkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "city night"
+    },
+    {
+      "id": "memo-6",
+      "description": "A cozy reading nook with a bookshelf",
+      "imageUrl": "https://images.unsplash.com/photo-1739015829043-f09c90b2cd71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3p5JTIwbGlicmFyeXxlbnwwfHx8fDE3NjQwMjg5MTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cozy library"
+    },
+    {
+      "id": "bg-1",
+      "description": "Abstract pastel colors background",
+      "imageUrl": "https://images.unsplash.com/photo-1601408993947-6ef9e7a1ed97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhYnN0cmFjdCUyMHBhc3RlbHxlbnwwfHx8fDE3NjM5NzQwMzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract pastel"
+    },
+    {
+      "id": "bg-2",
+      "description": "Minimalist white wood texture",
+      "imageUrl": "https://images.unsplash.com/photo-1531824475211-72594993ce2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3aGl0ZSUyMHdvb2R8ZW58MHx8fHwxNzYzOTU4NjE2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "white wood"
+    },
+    {
+      "id": "bg-3",
+      "description": "Calm serene beach with waves",
+      "imageUrl": "https://images.unsplash.com/photo-1533012562945-b003ce1d3269?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzZXJlbmUlMjBiZWFjaHxlbnwwfHx8fDE3NjQwMjg5MTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "serene beach"
+    },
+    {
+      "id": "bg-4",
+      "description": "Dark textured concrete wall",
+      "imageUrl": "https://images.unsplash.com/photo-1558120985-abcafafcae16?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkYXJrJTIwY29uY3JldGV8ZW58MHx8fHwxNzY0MDI4OTE1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dark concrete"
+    }
+  ]
 }
