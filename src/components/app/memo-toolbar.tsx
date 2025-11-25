@@ -72,43 +72,60 @@ export function MemoToolbar({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!supportedTypes.includes(file.type)) {
+        toast({
+          variant: 'destructive',
+          title: t('error'),
+          description: t('unsupportedFileType'),
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
-         const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 600;
-          let width = img.width;
-          let height = img.height;
+        if (!e.target?.result) return;
+        const dataUrl = e.target.result as string;
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-          
+        if (file.type === 'image/gif') {
+          // For GIFs, use the original file to preserve animation
           onCoverImageChange(dataUrl);
           if (!isNewMemo) {
-            toast({
-              title: t('coverImageChanged'),
-              description: t('newCoverImageApplied'),
-            });
+            toast({ title: t('coverImageChanged'), description: t('newCoverImageApplied') });
           }
-        };
-        if (e.target?.result) {
-          img.src = e.target.result as string;
+        } else {
+          // For other formats, resize the image
+          const img = document.createElement('img');
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 600;
+            let width = img.width;
+            let height = img.height;
+  
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            
+            onCoverImageChange(resizedDataUrl);
+            if (!isNewMemo) {
+              toast({ title: t('coverImageChanged'), description: t('newCoverImageApplied') });
+            }
+          };
+          img.src = dataUrl;
         }
       };
       reader.readAsDataURL(file);
@@ -175,7 +192,7 @@ export function MemoToolbar({
               ref={fileInputRef}
               onChange={handleFileChange}
               className="hidden"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp,image/gif"
             />
             <Button type="button" variant="ghost" size="sm" className="h-7" onClick={handleImageUploadClick}>
               <Upload className="h-3 w-3 mr-1" />

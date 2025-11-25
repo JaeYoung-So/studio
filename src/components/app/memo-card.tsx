@@ -97,27 +97,29 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
             isDragging && "touch-none"
         )}
     >
-        <div className="relative">
-            <div className="relative h-32 w-full bg-muted/20">
-                {memo.coverImageUrl && (
-                    <Image
-                        src={memo.coverImageUrl}
-                        alt={memo.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                )}
-            </div>
-            {Icon && (
-                <div className={cn(
-                    "absolute left-4 bg-background p-1 rounded-full border",
-                    memo.coverImageUrl ? "top-auto bottom-[-1.5rem] bg-card/80 backdrop-blur-sm" : "-bottom-5"
-                )}>
-                    <Icon className="h-8 w-8 text-gray-500" />
-                </div>
-            )}
+      <div className="relative">
+        <div className="relative h-32 w-full bg-muted/20">
+          {memo.coverImageUrl && (
+            <Image
+              src={memo.coverImageUrl}
+              alt={memo.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              unoptimized={memo.coverImageUrl.endsWith('.gif')}
+            />
+          )}
         </div>
+        {Icon && (
+          <div className={cn(
+              "absolute left-4 bg-background p-1 rounded-full border",
+              "top-auto -bottom-5 transform"
+          )}>
+              <Icon className="h-8 w-8 text-gray-500" />
+          </div>
+        )}
+      </div>
+
       <div className={cn("relative flex flex-col flex-1")}>
         <CardHeader className={cn(
             "flex flex-row items-start justify-between space-y-0 pb-2",
@@ -174,6 +176,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  unoptimized={memo.imageUrl.endsWith('.gif')}
                 />
               </div>
             )}

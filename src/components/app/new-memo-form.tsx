@@ -96,41 +96,56 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!supportedTypes.includes(file.type)) {
+        toast({
+          variant: 'destructive',
+          title: t('error'),
+          description: t('unsupportedFileType'),
+        });
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (e) => {
-        const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 600;
-          let width = img.width;
-          let height = img.height;
+        if (!e.target?.result) return;
+        const dataUrl = e.target.result as string;
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL(file.type);
-
+        if (file.type === 'image/gif') {
+          // For GIFs, use the original file to preserve animation
           form.setValue('imageUrl', dataUrl);
-          toast({
-            title: t('imageAdded'),
-            description: t('imageAddedDesc'),
-          });
-        };
-        if (e.target?.result) {
-          img.src = e.target.result as string;
+          toast({ title: t('imageAdded'), description: t('imageAddedDesc') });
+        } else {
+          // For other formats, resize the image
+          const img = document.createElement('img');
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 600;
+            let width = img.width;
+            let height = img.height;
+  
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            
+            form.setValue('imageUrl', resizedDataUrl);
+            toast({ title: t('imageAdded'), description: t('imageAddedDesc') });
+          };
+          img.src = dataUrl;
         }
       };
       reader.readAsDataURL(file);
@@ -208,7 +223,7 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
           ref={fileInputRef}
           onChange={handleFileChange}
           className="hidden"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp,image/gif"
         />
         <div className="flex gap-2">
             <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
@@ -220,28 +235,28 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
         </div>
 
         <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen}>
-          <div className="flex justify-start">
+            <div className="flex justify-start">
               <CollapsibleTrigger asChild>
                   <Button type="button" variant="outline" size="sm">
                       <Palette className="h-4 w-4 mr-2" />
                       {t('decorate')}
                   </Button>
               </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent>
-            <div className="bg-card p-4 rounded-md border mt-2">
-                <MemoToolbar
-                    memo={form.watch()}
-                    onIconChange={handleIconChange}
-                    onCoverImageChange={handleCoverImageChange}
-                    onRemoveCoverImage={handleRemoveCoverImage}
-                    images={images}
-                    isNewMemo={true}
-                    t={t}
-                />
             </div>
-          </CollapsibleContent>
-      </Collapsible>
+            <CollapsibleContent>
+              <div className="bg-card p-4 rounded-md border mt-2">
+                  <MemoToolbar
+                      memo={form.watch()}
+                      onIconChange={handleIconChange}
+                      onCoverImageChange={handleCoverImageChange}
+                      onRemoveCoverImage={handleRemoveCoverImage}
+                      images={images}
+                      isNewMemo={true}
+                      t={t}
+                  />
+              </div>
+            </CollapsibleContent>
+        </Collapsible>
 
         <Button type="submit" className="w-full">{t('addMemo')}</Button>
       </form>

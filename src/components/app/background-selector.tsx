@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface BackgroundSelectorProps {
   onBackgroundChange: (url: string) => void;
@@ -57,6 +58,7 @@ export default function BackgroundSelector({
     '#e9d5ff', // purple-200
   ];
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleImageUploadClick = () => {
     fileInputRef.current?.click();
@@ -65,37 +67,54 @@ export default function BackgroundSelector({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+      if (!supportedTypes.includes(file.type)) {
+        toast({
+          variant: 'destructive',
+          title: t('error'),
+          description: t('unsupportedFileType'),
+        });
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (e) => {
-        const img = document.createElement('img');
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 1920;
-          const MAX_HEIGHT = 1080;
-          let width = img.width;
-          let height = img.height;
+        if (!e.target?.result) return;
+        const dataUrl = e.target.result as string;
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-          
+        if (file.type === 'image/gif') {
+          // For GIFs, use the original file to preserve animation
           onImageUpload(dataUrl);
-        };
-        if (e.target?.result) {
-          img.src = e.target.result as string;
+        } else {
+          // For other formats, resize the image
+          const img = document.createElement('img');
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1920;
+            const MAX_HEIGHT = 1080;
+            let width = img.width;
+            let height = img.height;
+  
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx?.drawImage(img, 0, 0, width, height);
+            const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            
+            onImageUpload(resizedDataUrl);
+          };
+          img.src = dataUrl;
         }
       };
       reader.readAsDataURL(file);
@@ -176,7 +195,7 @@ export default function BackgroundSelector({
                   ref={fileInputRef}
                   onChange={handleFileChange}
                   className="hidden"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
                 />
                 <Button variant="outline" size="sm" onClick={handleImageUploadClick}>
                   <Upload className="h-3 w-3 mr-2" />
@@ -199,6 +218,7 @@ export default function BackgroundSelector({
                           sizes="150px"
                           className="object-cover transition-transform group-hover/button:scale-105"
                           data-ai-hint={image.imageHint}
+                          unoptimized={image.imageUrl.endsWith('.gif')}
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover/button:bg-black/40 transition-colors" />
                       </button>
