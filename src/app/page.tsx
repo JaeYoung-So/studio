@@ -238,26 +238,20 @@ export default function Home() {
     }
   };
 
-  const filteredMemos = memos.filter(memo => {
-    const categoryMatch =
-      selectedCategory === t('all') ||
-      (selectedCategory === t('uncategorized') && !memo.category) ||
-      memo.category === selectedCategory;
-    
-    if (!categoryMatch) {
-      return false;
-    }
-
-    if (!searchTerm) {
-      return true;
-    }
-
+  const filteredMemos = memos
+  .filter(memo => {
+    if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
       (memo.title && memo.title.toLowerCase().includes(term)) ||
       (memo.content && memo.content.toLowerCase().includes(term)) ||
       (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term))
     );
+  })
+  .filter(memo => {
+    if (selectedCategory === t('all')) return true;
+    if (selectedCategory === t('uncategorized')) return !memo.category;
+    return memo.category === selectedCategory;
   });
 
 
