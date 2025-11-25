@@ -26,6 +26,7 @@ import {
     AlertDialogTrigger,
   } from '@/components/ui/alert-dialog';
 import { Language } from '@/lib/i18n';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
 
 interface MemoCardProps {
   memo: Memo;
@@ -168,17 +169,31 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
             </div>
         </CardHeader>
         <CardContent className="flex-1 space-y-4 pt-0">
-            {memo.imageUrl && (
-              <div className="relative aspect-video w-full rounded-md overflow-hidden mt-2">
-                <Image
-                  src={memo.imageUrl}
-                  alt={memo.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  unoptimized={memo.imageUrl.endsWith('.gif')}
-                />
-              </div>
+            {memo.imageUrls && memo.imageUrls.length > 0 && (
+                <Carousel className="w-full max-w-xs mx-auto">
+                    <CarouselContent>
+                        {memo.imageUrls.map((url, index) => (
+                            <CarouselItem key={index}>
+                                <div className="relative aspect-video w-full rounded-md overflow-hidden mt-2">
+                                    <Image
+                                        src={url}
+                                        alt={`${memo.title} - image ${index + 1}`}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        unoptimized={url.endsWith('.gif')}
+                                    />
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    {memo.imageUrls.length > 1 && (
+                        <>
+                            <CarouselPrevious className="-left-8" />
+                            <CarouselNext className="-right-8" />
+                        </>
+                    )}
+                </Carousel>
             )}
             <p className="text-sm text-foreground/80 whitespace-pre-wrap">{memo.content}</p>
         </CardContent>

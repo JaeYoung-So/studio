@@ -3,7 +3,7 @@ export interface Memo {
   title: string;
   content: string;
   category?: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   isVoiceMemo: boolean;
   createdAt: Date;
   icon?: string;

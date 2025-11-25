@@ -20,7 +20,7 @@ const initialMemos: Memo[] = [
     category: '업무',
     isVoiceMemo: false,
     createdAt: new Date('2023-10-26T10:00:00Z'),
-    imageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'memo-1')?.imageUrl,
+    imageUrls: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'memo-1') ? [INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'memo-1')!.imageUrl] : [],
     icon: 'briefcase',
     coverImageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'bg-1')?.imageUrl,
   },
@@ -32,6 +32,7 @@ const initialMemos: Memo[] = [
     isVoiceMemo: false,
     createdAt: new Date('2023-10-25T15:30:00Z'),
     icon: 'shopping-cart',
+    imageUrls: [],
   },
   {
     id: '3',
@@ -41,6 +42,7 @@ const initialMemos: Memo[] = [
     isVoiceMemo: true,
     createdAt: new Date('2023-10-24T09:00:00Z'),
     icon: 'lightbulb',
+    imageUrls: [],
     coverImageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'bg-3')?.imageUrl,
   },
 ];
@@ -65,7 +67,11 @@ export default function Home() {
     
     const storedMemos = localStorage.getItem('memos');
     if (storedMemos) {
-      setMemos(JSON.parse(storedMemos).map((memo: any) => ({...memo, createdAt: new Date(memo.createdAt)})));
+      setMemos(JSON.parse(storedMemos).map((memo: any) => ({
+        ...memo, 
+        createdAt: new Date(memo.createdAt),
+        imageUrls: memo.imageUrls || (memo.imageUrl ? [memo.imageUrl] : [])
+      })));
     } else {
        setMemos(initialMemos.map(memo => ({
         ...memo,
@@ -110,8 +116,10 @@ export default function Home() {
 
   useEffect(() => {
     if (!isClient) return;
-    setSelectedCategory(t('all'));
-  }, [language, isClient]);
+     if (isClient) {
+      setSelectedCategory(t('all'));
+    }
+  }, [language, isClient, t]);
 
   useEffect(() => {
     if (!isClient || memos.length === 0) return;
@@ -146,9 +154,6 @@ export default function Home() {
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemoData: Omit<Memo, 'id' | 'createdAt'> = {...memo};
-    if (!newMemoData.imageUrl) {
-        delete newMemoData.imageUrl;
-    }
     const newMemo: Memo = {
       id: new Date().toISOString(),
       createdAt: new Date(),

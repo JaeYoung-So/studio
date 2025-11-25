@@ -140,13 +140,13 @@ export function MemoToolbar({
     : { className: "w-80", align: "end" as "end" };
 
   const currentMemoImages = [
-    ...(memo.imageUrl ? [{ id: 'current-image', imageUrl: memo.imageUrl, description: 'Current', imageHint: 'current' }] : []),
-    ...(memo.coverImageUrl && memo.imageUrl !== memo.coverImageUrl ? [{ id: 'current-cover', imageUrl: memo.coverImageUrl, description: 'Current Cover', imageHint: 'current cover' }] : [])
+    ...(memo.imageUrls ? memo.imageUrls.map((url, i) => ({ id: `current-image-${i}`, imageUrl: url, description: 'Current', imageHint: 'current' })) : []),
+    ...(memo.coverImageUrl && (!memo.imageUrls || !memo.imageUrls.includes(memo.coverImageUrl)) ? [{ id: 'current-cover', imageUrl: memo.coverImageUrl, description: 'Current Cover', imageHint: 'current cover' }] : [])
   ];
 
   const combinedImages = [
     ...currentMemoImages,
-    ...images.filter(img => img.imageUrl !== memo.imageUrl && img.imageUrl !== memo.coverImageUrl)
+    ...images.filter(img => !currentMemoImages.some(mi => mi.imageUrl === img.imageUrl))
   ];
 
 
@@ -229,6 +229,7 @@ export function MemoToolbar({
                   sizes="150px"
                   className="object-cover transition-transform group-hover:scale-105"
                   data-ai-hint={image.imageHint}
+                  unoptimized={image.imageUrl.endsWith('.gif')}
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
                  {image.id.startsWith('uploaded-') && (
