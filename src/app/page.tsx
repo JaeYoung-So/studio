@@ -122,6 +122,7 @@ export default function Home() {
         onAddMemo={handleAddMemo}
         onSelectCategory={handleCategorySelect}
         selectedCategory={selectedCategory}
+        backgroundColor={backgroundColor}
       />
       <SidebarInset
         className="transition-all duration-300 ease-in-out"
@@ -138,6 +139,7 @@ export default function Home() {
             onSearch={setSearchTerm}
             onBackgroundChange={handleBackgroundChange}
             onBackgroundColorChange={handleBackgroundColorChange}
+            backgroundColor={backgroundColor}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList

@@ -5,18 +5,24 @@ import { Sidebar, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupLabel
 import NewMemoForm from './new-memo-form';
 import { CATEGORIES } from '@/lib/types';
 import { ScrollArea } from '../ui/scroll-area';
+import { cn, hslToRgba } from '@/lib/utils';
 
 interface AppSidebarProps {
   onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
   onSelectCategory: (category: string) => void;
   selectedCategory: string;
+  backgroundColor?: string;
 }
 
-export default function AppSidebar({ onAddMemo, onSelectCategory, selectedCategory }: AppSidebarProps) {
+export default function AppSidebar({ onAddMemo, onSelectCategory, selectedCategory, backgroundColor }: AppSidebarProps) {
   const allCategories = ['전체', ...CATEGORIES];
 
+  const sidebarStyle = backgroundColor
+    ? { backgroundColor: hslToRgba(backgroundColor, 0.9) }
+    : {};
+
   return (
-    <Sidebar>
+    <Sidebar style={sidebarStyle} className={cn(backgroundColor && 'border-none')}>
       <ScrollArea className="h-full">
         <SidebarHeader>
           <h2 className="text-lg font-headline font-semibold">새 메모</h2>

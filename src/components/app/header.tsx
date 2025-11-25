@@ -5,16 +5,29 @@ import { Search } from 'lucide-react';
 import BackgroundSelector from './background-selector';
 import { SidebarTrigger } from '../ui/sidebar';
 import { AppLogo } from '../icons';
+import { cn, hslToRgba } from '@/lib/utils';
 
 interface HeaderProps {
   onSearch: (term: string) => void;
   onBackgroundChange: (url: string) => void;
   onBackgroundColorChange: (color: string) => void;
+  backgroundColor?: string;
 }
 
-export default function Header({ onSearch, onBackgroundChange, onBackgroundColorChange }: HeaderProps) {
+export default function Header({ onSearch, onBackgroundChange, onBackgroundColorChange, backgroundColor }: HeaderProps) {
+
+  const headerStyle = backgroundColor
+    ? { backgroundColor: hslToRgba(backgroundColor, 0.5) }
+    : {};
+    
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background/50 px-4 md:px-6 sticky top-0 z-30 backdrop-blur-sm">
+    <header 
+      className={cn(
+        "flex h-16 items-center gap-4 border-b bg-background/50 px-4 md:px-6 sticky top-0 z-30 backdrop-blur-sm",
+        backgroundColor && "bg-transparent border-none"
+      )}
+      style={headerStyle}
+    >
       <div className="flex items-center gap-2">
          <SidebarTrigger className="md:hidden" />
          <AppLogo className="h-8 w-8 text-primary" />
