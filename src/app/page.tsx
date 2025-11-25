@@ -108,8 +108,9 @@ export default function Home() {
     if (metaDescription) {
       metaDescription.setAttribute('content', t('description'));
     }
+    // Set selectedCategory to the translated 'all' string when language changes
     setSelectedCategory(t('all'));
-  }, [language, isClient]);
+  }, [language, isClient, t]);
 
   useEffect(() => {
     if (isClient) {
@@ -242,9 +243,11 @@ export default function Home() {
     if (selectedCategory === t('all')) {
       return true;
     }
+    
     if (selectedCategory === t('uncategorized')) {
       return !memo.category;
     }
+    
     return memo.category === selectedCategory;
   });
 
