@@ -109,7 +109,7 @@ export default function Home() {
       metaDescription.setAttribute('content', t('description'));
     }
     setSelectedCategory(t('all'));
-  }, [t, isClient]);
+  }, [t, isClient, language]);
 
   useEffect(() => {
     if (isClient) {
@@ -238,7 +238,7 @@ export default function Home() {
       memo.category === selectedCategory;
 
     const searchMatch =
-      searchTerm === '' ||
+      !searchTerm ||
       (memo.title && memo.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (memo.content && memo.content.toLowerCase().includes(searchTerm.toLowerCase()));
       
