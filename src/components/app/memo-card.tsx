@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Memo } from '@/lib/types';
@@ -6,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus, Palette } from 'lucide-react';
 import Image from 'next/image';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { ko, enUS } from 'date-fns/locale';
 import { MemoToolbar } from './memo-toolbar';
 import * as React from 'react';
@@ -31,7 +32,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { Collapsible, CollapsibleTrigger } from '../ui/collapsible';
 
 interface MemoCardProps {
   memo: Memo;
@@ -298,7 +299,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                               <ImagePlus className="h-4 w-4" />
                           </Button>
                           <CollapsibleTrigger asChild>
-                              <Button type="button" variant="outline" size="icon">
+                              <Button type="button" variant="outline" size="icon" className="gap-2">
                                   <Palette className="h-4 w-4" />
                               </Button>
                           </CollapsibleTrigger>
@@ -365,7 +366,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                   )}
               </div>
               <span>
-              {formatDistanceToNow(new Date(memo.createdAt), { addSuffix: true, locale: lang === 'ko' ? ko : enUS })}
+              {format(new Date(memo.createdAt), 'yyyy-MM-dd-HH-mm-ss')}
               </span>
           </CardFooter>
       </div>
