@@ -160,7 +160,7 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
           className="hidden"
           accept="image/*"
         />
-        <div className="flex justify-between gap-2">
+        <div className="flex justify-between items-start gap-2">
             <div className="flex gap-2">
               <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
                   <ImagePlus className="h-4 w-4" />
@@ -170,12 +170,14 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
               </Button>
             </div>
 
-            <Collapsible>
-              <CollapsibleTrigger asChild>
-                <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
-                    <Palette className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
+            <Collapsible className="w-full flex-1">
+              <div className="flex justify-end">
+                <CollapsibleTrigger asChild>
+                  <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
+                      <Palette className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
               <CollapsibleContent>
                 <MemoToolbar
                   memo={form.getValues()}
