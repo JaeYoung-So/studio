@@ -66,7 +66,6 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
       } = useSortable({id: memo.id, disabled: isEditing });
 
     const [editedMemo, setEditedMemo] = React.useState<Memo>(memo);
-    const [isDecoratorOpen, setIsDecoratorOpen] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const { toast } = useToast();
       
@@ -100,13 +99,11 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
 
     const handleCancel = () => {
         setIsEditing(false);
-        setIsDecoratorOpen(false);
     };
 
     const handleSave = () => {
         onUpdate(editedMemo);
         setIsEditing(false);
-        setIsDecoratorOpen(false);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -273,22 +270,11 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                           </AlertDialog>
                       </>
                   )}
-                  {!isEditing && (
-                     <MemoToolbar 
-                        memo={editedMemo}
-                        onIconChange={handleIconChange} 
-                        onCoverImageChange={handleCoverImageChange}
-                        onRemoveCoverImage={handleRemoveCoverImage}
-                        images={images}
-                        t={t}
-                        isEditing={isEditing}
-                    />
-                  )}
               </div>
           </CardHeader>
           <CardContent className="flex-1 space-y-4 pt-0">
               {isEditing ? (
-                  <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} className='space-y-4'>
+                  <Collapsible open={isEditing} className='space-y-4'>
                       <Textarea
                           name="content"
                           value={editedMemo.content}
