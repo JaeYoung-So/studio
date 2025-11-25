@@ -51,23 +51,18 @@ export default function Home() {
   const { t, language, setLanguage } = useTranslation();
   const [memos, setMemos] = useState<Memo[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(t('all'));
-  const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
-  const [images, setImages] = useState<ImagePlaceholder[]>(INITIAL_PLACEHOLDER_IMAGES);
+  const [images, setImages] = useState<ImagePlaceholder[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    document.title = t('title');
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', t('description'));
-    }
-  }, [language, t]);
-
-  useEffect(() => {
+    setIsClient(true);
+    
     const storedMemos = localStorage.getItem('memos');
     if (storedMemos) {
       setMemos(JSON.parse(storedMemos).map((memo: any) => ({...memo, createdAt: new Date(memo.createdAt)})));
@@ -105,13 +100,26 @@ export default function Home() {
   }, [language]);
 
   useEffect(() => {
+    if (!isClient) return;
+    document.title = t('title');
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', t('description'));
+    }
+    setSelectedCategory(t('all'));
+  }, [language, t, isClient]);
+
+
+  useEffect(() => {
     if (memos.length > 0) {
       localStorage.setItem('memos', JSON.stringify(memos));
     }
   }, [memos]);
   
   useEffect(() => {
-    localStorage.setItem('categories', JSON.stringify(categories));
+    if (categories.length > 0) {
+        localStorage.setItem('categories', JSON.stringify(categories));
+    }
   }, [categories]);
 
   useEffect(() => {
@@ -127,13 +135,11 @@ export default function Home() {
   }, [backgroundOpacity]);
 
   useEffect(() => {
-    localStorage.setItem('images', JSON.stringify(images));
+    if (images.length > 0) {
+        localStorage.setItem('images', JSON.stringify(images));
+    }
   }, [images]);
   
-  useEffect(() => {
-    setSelectedCategory(t('all'));
-  }, [t]);
-
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemoData: Omit<Memo, 'id' | 'createdAt'> = {...memo};
@@ -224,6 +230,10 @@ export default function Home() {
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
   const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <SidebarProvider>
