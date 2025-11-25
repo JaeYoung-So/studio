@@ -183,20 +183,24 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
           className="hidden"
           accept="image/*"
         />
-        <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} className="space-y-4">
-            <div className="flex justify-between items-center gap-2">
-                <div className="flex gap-2">
-                    <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
-                        <ImagePlus className="h-4 w-4" />
-                    </Button>
-                    <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label={t('recordVoiceMemo')}>
-                        <Mic className="h-4 w-4" />
-                    </Button>
-                </div>
+        <div className="space-y-2">
+            <div className="flex gap-2">
+                <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
+                    <ImagePlus className="h-4 w-4" />
+                </Button>
+                <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label={t('recordVoiceMemo')}>
+                    <Mic className="h-4 w-4" />
+                </Button>
+            </div>
+        </div>
+
+        <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} className="space-y-2">
+            <div className="flex justify-start">
                 <CollapsibleTrigger asChild>
-                  <Button type="button" variant="outline" size="icon" aria-label={t('decorate')}>
-                      <Palette className="h-4 w-4" />
-                  </Button>
+                    <Button type="button" variant="outline" size="sm">
+                        <Palette className="h-4 w-4 mr-2" />
+                        {t('decorate')}
+                    </Button>
                 </CollapsibleTrigger>
             </div>
             <CollapsibleContent>
@@ -213,6 +217,7 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
               </div>
             </CollapsibleContent>
         </Collapsible>
+
         <Button type="submit" className="w-full">{t('addMemo')}</Button>
       </form>
     </Form>
