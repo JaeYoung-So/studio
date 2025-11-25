@@ -5,7 +5,7 @@ import type { Memo } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus } from 'lucide-react';
+import { Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music, Edit, X, Save, ImagePlus, Palette } from 'lucide-react';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { ko, enUS } from 'date-fns/locale';
@@ -31,7 +31,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Collapsible, CollapsibleTrigger } from '../ui/collapsible';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/collapsible';
 import { MemoToolbar } from './memo-toolbar';
 
 interface MemoCardProps {
@@ -223,10 +223,10 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                       name="title"
                       value={editedMemo.title}
                       onChange={handleInputChange}
-                      className="text-lg font-headline flex items-center gap-2 border-0 shadow-none focus-visible:ring-0 p-0"
+                      className="text-lg font-headline flex items-center border-0 shadow-none focus-visible:ring-0 p-0"
                   />
               ) : (
-                  <CardTitle className="text-lg font-headline flex items-center gap-2">
+                  <CardTitle className="text-lg font-headline flex items-center">
                       {memo.title}
                   </CardTitle>
               )}
@@ -347,7 +347,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                   </>
               )}
           </CardContent>
-          <CardFooter className="flex justify-between items-center text-xs text-muted-foreground mt-auto">
+          <CardFooter className="flex justify-between items-end text-xs text-muted-foreground mt-auto">
               <div className="flex items-center gap-2">
                   {isEditing ? (
                       <Select onValueChange={handleCategoryChange} value={editedMemo.category || 'uncategorized'}>
@@ -365,9 +365,14 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
                       memo.category && <Badge variant="secondary">{memo.category}</Badge>
                   )}
               </div>
-              <span>
-              {format(new Date(memo.createdAt), lang === 'ko' ? 'yyyy년 M월 d일' : 'PP', { locale: lang === 'ko' ? ko : enUS })}
-              </span>
+              <div className="text-right">
+                <div>
+                  {format(new Date(memo.createdAt), lang === 'ko' ? 'yyyy년 M월 d일' : 'PP', { locale: lang === 'ko' ? ko : enUS })}
+                </div>
+                <div>
+                  {format(new Date(memo.createdAt), lang === 'ko' ? 'p' : 'p', { locale: lang === 'ko' ? ko : enUS })}
+                </div>
+              </div>
           </CardFooter>
       </div>
     </Card>
