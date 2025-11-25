@@ -180,15 +180,17 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
                     <Palette className="h-4 w-4" />
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
-                <MemoToolbar
-                  memo={form.getValues()}
-                  onIconChange={handleIconChange}
-                  onCoverImageChange={handleCoverImageChange}
-                  onRemoveCoverImage={handleRemoveCoverImage}
-                  images={INITIAL_PLACEHOLDER_IMAGES}
-                  isNewMemo={true}
-                />
+              <CollapsibleContent>
+                <div className="absolute right-0 mt-2 z-10 bg-sidebar p-4 rounded-md border w-full">
+                    <MemoToolbar
+                        memo={form.getValues()}
+                        onIconChange={handleIconChange}
+                        onCoverImageChange={handleCoverImageChange}
+                        onRemoveCoverImage={handleRemoveCoverImage}
+                        images={INITIAL_PLACEHOLDER_IMAGES}
+                        isNewMemo={true}
+                    />
+                </div>
               </CollapsibleContent>
             </Collapsible>
         </div>
