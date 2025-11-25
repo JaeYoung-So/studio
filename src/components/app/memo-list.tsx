@@ -17,7 +17,6 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
     .filter(memo => {
       const categoryMatch =
         selectedCategory === '전체' ||
-        (selectedCategory === '미분류' && !memo.category) ||
         memo.category === selectedCategory;
       const searchMatch =
         searchTerm === '' ||

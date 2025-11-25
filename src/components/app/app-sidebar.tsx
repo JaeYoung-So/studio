@@ -33,7 +33,7 @@ export default function AppSidebar({
   backgroundColor, 
   backgroundOpacity 
 }: AppSidebarProps) {
-  const allCategories = ['전체', '미분류', ...categories];
+  const allCategories = ['전체', ...categories];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
 
@@ -69,7 +69,7 @@ export default function AppSidebar({
   return (
     <Sidebar className={cn(backgroundColor && 'border-none')}>
       <ScrollArea className="h-full rounded-lg" style={scrollAreaStyle}>
-        <SidebarHeader>
+        <SidebarHeader className="bg-transparent">
           <h2 className="text-lg font-headline font-semibold">새 메모</h2>
           <NewMemoForm onAddMemo={onAddMemo} categories={categories} />
         </SidebarHeader>
@@ -108,7 +108,7 @@ export default function AppSidebar({
                   >
                     {category}
                   </SidebarMenuButton>
-                  {category !== '전체' && category !== '미분류' && (
+                  {category !== '전체' && (
                      <Button
                         variant="ghost"
                         size="icon"
