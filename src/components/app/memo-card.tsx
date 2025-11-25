@@ -55,6 +55,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 
 export default function MemoCard({ memo, onDelete, onUpdate, images, t, categories }: MemoCardProps) {
+    const [isEditing, setIsEditing] = React.useState(false);
     const {
         attributes,
         listeners,
@@ -64,7 +65,6 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
         isDragging,
       } = useSortable({id: memo.id, disabled: isEditing });
 
-    const [isEditing, setIsEditing] = React.useState(false);
     const [editedMemo, setEditedMemo] = React.useState<Memo>(memo);
     const [isDecoratorOpen, setIsDecoratorOpen] = React.useState(false);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
