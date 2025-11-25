@@ -9,6 +9,7 @@ import MemoList from '@/components/app/memo-list';
 import { INITIAL_PLACEHOLDER_IMAGES, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { colorToRgba } from '@/lib/utils';
 import { arrayMove } from '@dnd-kit/sortable';
+import NewMemoForm from '@/components/app/new-memo-form';
 
 const initialMemos: Memo[] = [
   {
@@ -119,13 +120,7 @@ export default function Home() {
     const newMemo: Memo = {
       id: new Date().toISOString(),
       createdAt: new Date(),
-      title: memo.title,
-      content: memo.content,
-      isVoiceMemo: memo.isVoiceMemo,
-      ...(memo.category && { category: memo.category }),
-      ...(memo.imageUrl && { imageUrl: memo.imageUrl }),
-      ...(memo.icon && { icon: memo.icon }),
-      ...(memo.coverImageUrl && { coverImageUrl: memo.coverImageUrl }),
+      ...memo
     };
     setMemos(prevMemos => [newMemo, ...prevMemos]);
   };
@@ -209,16 +204,18 @@ export default function Home() {
 
   return (
     <SidebarProvider>
-      <AppSidebar 
-        onAddMemo={handleAddMemo}
-        categories={categories}
-        onAddCategory={handleAddCategory}
-        onDeleteCategory={handleDeleteCategory}
-        onSelectCategory={handleCategorySelect}
-        selectedCategory={selectedCategory}
-        backgroundColor={backgroundColor}
-        backgroundOpacity={backgroundOpacity}
-      />
+      <AppSidebar>
+        <NewMemoForm onAddMemo={handleAddMemo} categories={categories} images={images} />
+        <AppSidebar.Categories 
+            categories={categories}
+            onAddCategory={handleAddCategory}
+            onDeleteCategory={handleDeleteCategory}
+            onSelectCategory={handleCategorySelect}
+            selectedCategory={selectedCategory}
+            backgroundColor={backgroundColor}
+            backgroundOpacity={backgroundOpacity}
+        />
+      </AppSidebar>
       <SidebarInset
         className="transition-all duration-300 ease-in-out"
         style={{ 

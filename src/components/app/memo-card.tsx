@@ -4,7 +4,7 @@ import type { Memo } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mic, Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical } from 'lucide-react';
+import { Mic, Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical, Book, Coffee, Gamepad2, Music } from 'lucide-react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -14,6 +14,17 @@ import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/lib/utils';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+  } from '@/components/ui/alert-dialog';
 
 interface MemoCardProps {
   memo: Memo;
@@ -27,6 +38,10 @@ const iconMap: { [key: string]: React.ElementType } = {
   briefcase: Briefcase,
   'shopping-cart': ShoppingCart,
   lightbulb: Lightbulb,
+  book: Book,
+  coffee: Coffee,
+  'gamepad-2': Gamepad2,
+  music: Music,
 };
 
 
@@ -55,7 +70,8 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
     };
 
     const handleCoverImageChange = (url: string) => {
-        onUpdate({ ...memo, coverImageUrl: url });
+        const newUrl = memo.coverImageUrl === url ? undefined : url;
+        onUpdate({ ...memo, coverImageUrl: newUrl });
     };
 
     const handleRemoveCoverImage = () => {
@@ -70,8 +86,8 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
             "flex flex-col overflow-hidden transition-shadow hover:shadow-xl duration-300 ease-in-out bg-card/80 backdrop-blur-sm touch-none"
         )}
     >
-      {(memo.coverImageUrl || memo.icon) && (
-          <div className="relative h-32 w-full">
+      {(memo.coverImageUrl || memo.imageUrl || memo.icon) && (
+          <div className="relative h-32 w-full bg-muted/20">
             {memo.coverImageUrl && (
               <Image
                 src={memo.coverImageUrl}
@@ -81,15 +97,27 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             )}
+             {!memo.coverImageUrl && memo.imageUrl && (
+              <Image
+                src={memo.imageUrl}
+                alt={memo.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            )}
           </div>
       )}
-      <div className="relative">
+      <div className={cn("relative", !(memo.coverImageUrl || memo.imageUrl || memo.icon) && 'pt-6')}>
         {Icon && (
           <div className="absolute -top-5 left-4 bg-background p-1 rounded-full border">
             <Icon className="h-8 w-8 text-gray-500" />
           </div>
         )}
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2 pt-8">
+        <CardHeader className={cn(
+            "flex flex-row items-start justify-between space-y-0 pb-2",
+            Icon ? 'pt-8' : 'pt-6'
+        )}>
             <CardTitle className="text-lg font-headline flex items-center gap-2">
                  {memo.title}
             </CardTitle>
@@ -105,30 +133,33 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                     images={images}
                     onUpdate={onUpdate}
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                  onClick={() => onDelete(memo.id)}
-                  aria-label="메모 삭제"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                         <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                          aria-label="메모 삭제"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>메모 삭제</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            이 메모를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                        </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>취소</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(memo.id)}>삭제</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </CardHeader>
         <CardContent className="flex-1 space-y-4">
-            {memo.imageUrl && (
-              <div className="relative aspect-video w-full overflow-hidden rounded-md">
-                  <Image
-                  src={memo.imageUrl}
-                  alt={memo.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  data-ai-hint="memo image"
-                  />
-              </div>
-            )}
             <p className="text-sm text-foreground/80 whitespace-pre-wrap">{memo.content}</p>
         </CardContent>
         <CardFooter className="flex justify-between items-center text-xs text-muted-foreground">

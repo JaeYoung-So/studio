@@ -7,10 +7,14 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import {
+  Book,
   Briefcase,
+  Coffee,
+  Gamepad2,
   Image as ImageIcon,
   Lightbulb,
   MoreVertical,
+  Music,
   Smile,
   ShoppingCart,
   Trash2,
@@ -44,14 +48,16 @@ export function MemoToolbar({
   onUpdate,
   isNewMemo = false
 }: MemoToolbarProps) {
-  const backgroundImages = images.filter(p => p.id.startsWith('bg-'));
-  const memoImages = images.filter(p => !p.id.startsWith('bg-'));
 
   const icons = [
     { name: 'smile', component: Smile },
     { name: 'briefcase', component: Briefcase },
     { name: 'shopping-cart', component: ShoppingCart },
     { name: 'lightbulb', component: Lightbulb },
+    { name: 'book', component: Book },
+    { name: 'coffee', component: Coffee },
+    { name: 'gamepad-2', component: Gamepad2 },
+    { name: 'music', component: Music },
   ];
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -101,7 +107,7 @@ export function MemoToolbar({
         <p className="text-xs font-medium text-muted-foreground mb-2">
           아이콘
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {icons.map(icon => (
             <Button
               key={icon.name}
@@ -150,13 +156,13 @@ export function MemoToolbar({
         </div>
         <ScrollArea className="h-40">
           <div className="grid grid-cols-2 gap-2">
-            {[...backgroundImages, ...memoImages].map(image => (
+            {images.map(image => (
               <button
                 key={image.id}
                 type="button"
                 className={cn(
                   "relative aspect-video w-full rounded-md overflow-hidden group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                  memo.coverImageUrl === image.imageUrl && "ring-2 ring-ring ring-offset-2"
+                  memo.coverImageUrl === image.imageUrl && "ring-2 ring-primary ring-offset-2"
                 )}
                 onClick={() => onCoverImageChange(image.imageUrl)}
               >
@@ -164,10 +170,14 @@ export function MemoToolbar({
                   src={image.imageUrl}
                   alt={image.description}
                   fill
+                  sizes="150px"
                   className="object-cover transition-transform group-hover:scale-105"
                   data-ai-hint={image.imageHint}
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                 {image.id.startsWith('uploaded-') && (
+                    <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{image.description}</p>
+                 )}
               </button>
             ))}
           </div>

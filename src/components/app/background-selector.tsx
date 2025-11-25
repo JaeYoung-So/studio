@@ -9,8 +9,19 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface BackgroundSelectorProps {
   onBackgroundChange: (url: string) => void;
@@ -31,7 +42,8 @@ export default function BackgroundSelector({
   images,
   onImageDelete,
 }: BackgroundSelectorProps) {
-  
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+
   const backgroundColors = [
     'hsl(0 0% 100%)', // white
     'hsl(222.2 84% 4.9%)', // black
@@ -60,10 +72,15 @@ export default function BackgroundSelector({
       };
       reader.readAsDataURL(file);
     }
+    // Reset file input to allow uploading the same file again
+    if(event.target) {
+        event.target.value = '';
+    }
   };
 
 
   return (
+    <>
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="배경 변경">
@@ -155,6 +172,7 @@ export default function BackgroundSelector({
                         src={image.imageUrl}
                         alt={image.description}
                         fill
+                        sizes="150px"
                         className="object-cover transition-transform group-hover/button:scale-105"
                         data-ai-hint={image.imageHint}
                       />
@@ -163,14 +181,19 @@ export default function BackgroundSelector({
                     {image.id.startsWith('uploaded-') && (
                       <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{image.description}</p>
                     )}
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => onImageDelete(image.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setImageToDelete(image.id);
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
                   </div>
                 ))}
               </div>
@@ -179,5 +202,29 @@ export default function BackgroundSelector({
         </div>
       </PopoverContent>
     </Popover>
+    <AlertDialog open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>이미지 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              이 이미지를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setImageToDelete(null)}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (imageToDelete) {
+                  onImageDelete(imageToDelete);
+                }
+                setImageToDelete(null);
+              }}
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Memo } from '@/lib/types';
 import { ImagePlus, Mic, Palette } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { INITIAL_PLACEHOLDER_IMAGES } from '@/lib/placeholder-images';
+import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { MemoToolbar } from './memo-toolbar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 
@@ -31,9 +31,10 @@ type FormValues = z.infer<typeof formSchema>;
 interface NewMemoFormProps {
   onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
   categories: string[];
+  images: ImagePlaceholder[];
 }
 
-export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps) {
+export default function NewMemoForm({ onAddMemo, categories, images }: NewMemoFormProps) {
   const { toast } = useToast();
   const [isVoice, setIsVoice] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,10 +54,20 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
   });
 
   function onSubmit(values: FormValues) {
-    const submissionValues = {
+    const submissionValues: Omit<Memo, 'id' | 'createdAt'> = {
       ...values,
       category: values.category === 'uncategorized' ? undefined : values.category,
     };
+    if (!submissionValues.imageUrl) {
+      delete submissionValues.imageUrl;
+    }
+    if (!submissionValues.coverImageUrl) {
+        delete submissionValues.coverImageUrl;
+    }
+    if (!submissionValues.icon) {
+        delete submissionValues.icon;
+    }
+
     onAddMemo(submissionValues);
     form.reset({
       title: '',
@@ -104,7 +115,8 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
   };
 
   const handleCoverImageChange = (url: string) => {
-    form.setValue('coverImageUrl', url);
+    const newUrl = form.getValues('coverImageUrl') === url ? undefined : url;
+    form.setValue('coverImageUrl', newUrl);
   };
   
   const handleRemoveCoverImage = () => {
@@ -189,11 +201,11 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
           <CollapsibleContent>
             <div className="mt-4 bg-card p-4 rounded-md border">
                 <MemoToolbar
-                    memo={form.getValues()}
+                    memo={form.watch()}
                     onIconChange={handleIconChange}
                     onCoverImageChange={handleCoverImageChange}
                     onRemoveCoverImage={handleRemoveCoverImage}
-                    images={INITIAL_PLACEHOLDER_IMAGES}
+                    images={images}
                     isNewMemo={true}
                 />
             </div>

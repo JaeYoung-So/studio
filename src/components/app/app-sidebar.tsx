@@ -1,8 +1,6 @@
 'use client';
 
-import type { Memo } from '@/lib/types';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import NewMemoForm from './new-memo-form';
 import { ScrollArea } from '../ui/scroll-area';
 import { cn, colorToRgba } from '@/lib/utils';
 import { Plus, Trash2 } from 'lucide-react';
@@ -11,9 +9,37 @@ import { Input } from '../ui/input';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
-interface AppSidebarProps {
-  onAddMemo: (memo: Omit<Memo, 'id' | 'createdAt'>) => void;
+
+interface AppSidebarComposition {
+  Categories: typeof AppSidebarCategories;
+}
+
+const AppSidebar: React.FC<React.PropsWithChildren<{}>> & AppSidebarComposition = ({ children }) => {
+  return (
+    <Sidebar className={cn('border-none')}>
+      <ScrollArea className="h-full rounded-lg bg-white">
+        <SidebarHeader className="bg-transparent">
+          <h2 className="text-lg font-headline font-semibold">새 메모</h2>
+          {children}
+        </SidebarHeader>
+      </ScrollArea>
+    </Sidebar>
+  );
+};
+
+interface AppSidebarCategoriesProps {
   categories: string[];
   onAddCategory: (category: string) => void;
   onDeleteCategory: (category: string) => void;
@@ -23,19 +49,17 @@ interface AppSidebarProps {
   backgroundOpacity: number;
 }
 
-export default function AppSidebar({ 
-  onAddMemo, 
+function AppSidebarCategories({ 
   categories,
   onAddCategory,
   onDeleteCategory,
   onSelectCategory, 
   selectedCategory, 
-  backgroundColor, 
-  backgroundOpacity 
-}: AppSidebarProps) {
+}: AppSidebarCategoriesProps) {
   const allCategories = ['전체', ...categories];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
   const handleAddCategory = () => {
     if (newCategory.trim() === '') {
@@ -62,71 +86,91 @@ export default function AppSidebar({
     });
   };
 
-  const scrollAreaStyle = backgroundColor
-    ? { backgroundColor: colorToRgba(backgroundColor, backgroundOpacity > 0.2 ? backgroundOpacity - 0.1 : 0.1) }
-    : { backgroundColor: '#ffffff' };
-
   return (
-    <Sidebar className={cn(backgroundColor && 'border-none')}>
-      <ScrollArea className="h-full rounded-lg" style={scrollAreaStyle}>
-        <SidebarHeader className="bg-transparent">
-          <h2 className="text-lg font-headline font-semibold">새 메모</h2>
-          <NewMemoForm onAddMemo={onAddMemo} categories={categories} />
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <div className="flex justify-between items-center pr-2">
-              <SidebarGroupLabel>카테고리</SidebarGroupLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-60">
-                  <div className="space-y-2">
-                    <p className="font-medium">새 카테고리 추가</p>
-                    <div className="flex gap-2">
-                      <Input 
-                        value={newCategory} 
-                        onChange={(e) => setNewCategory(e.target.value)} 
-                        placeholder="카테고리 이름"
-                      />
-                      <Button onClick={handleAddCategory}>추가</Button>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <SidebarMenu>
-              {allCategories.map(category => (
-                <SidebarMenuItem key={category} className="group/item">
-                  <SidebarMenuButton
-                    onClick={() => onSelectCategory(category)}
-                    isActive={selectedCategory === category}
-                    className="w-full justify-start"
-                  >
-                    {category}
-                  </SidebarMenuButton>
-                  {category !== '전체' && (
-                     <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteCategory(category);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
-                      </Button>
-                  )}
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-      </ScrollArea>
-    </Sidebar>
+    <>
+    <SidebarContent>
+        <SidebarGroup>
+        <div className="flex justify-between items-center pr-2">
+            <SidebarGroupLabel>카테고리</SidebarGroupLabel>
+            <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                <Plus className="h-4 w-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-60">
+                <div className="space-y-2">
+                <p className="font-medium">새 카테고리 추가</p>
+                <div className="flex gap-2">
+                    <Input 
+                    value={newCategory} 
+                    onChange={(e) => setNewCategory(e.target.value)} 
+                    placeholder="카테고리 이름"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                    />
+                    <Button onClick={handleAddCategory}>추가</Button>
+                </div>
+                </div>
+            </PopoverContent>
+            </Popover>
+        </div>
+        <SidebarMenu>
+            {allCategories.map(category => (
+            <SidebarMenuItem key={category} className="group/item relative">
+                <SidebarMenuButton
+                onClick={() => onSelectCategory(category)}
+                isActive={selectedCategory === category}
+                className="w-full justify-start"
+                >
+                {category}
+                </SidebarMenuButton>
+                {category !== '전체' && (
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setCategoryToDelete(category);
+                            }}
+                            >
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                    </AlertDialogTrigger>
+                )}
+            </SidebarMenuItem>
+            ))}
+        </SidebarMenu>
+        </SidebarGroup>
+    </SidebarContent>
+    <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>카테고리 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              '{categoryToDelete}' 카테고리를 정말로 삭제하시겠습니까? 이 카테고리에 속한 메모들은 '미분류' 상태가 됩니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCategoryToDelete(null)}>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (categoryToDelete) {
+                  onDeleteCategory(categoryToDelete);
+                }
+                setCategoryToDelete(null);
+              }}
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
+
+AppSidebar.Categories = AppSidebarCategories;
+
+export default AppSidebar;
