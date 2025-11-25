@@ -51,7 +51,7 @@ export default function Home() {
   const { t, language, setLanguage } = useTranslation();
   const [memos, setMemos] = useState<Memo[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(t('all'));
   const [categories, setCategories] = useState<string[]>([]);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
@@ -97,7 +97,7 @@ export default function Home() {
     } else {
       setImages(INITIAL_PLACEHOLDER_IMAGES);
     }
-  }, [language]);
+  }, []);
 
   useEffect(() => {
     if (!isClient) return;
@@ -106,39 +106,42 @@ export default function Home() {
     if (metaDescription) {
       metaDescription.setAttribute('content', t('description'));
     }
+  }, [t, isClient]);
+
+  useEffect(() => {
+    if (!isClient) return;
     setSelectedCategory(t('all'));
   }, [language, t, isClient]);
 
-
   useEffect(() => {
-    if (memos.length > 0) {
-      localStorage.setItem('memos', JSON.stringify(memos));
-    }
-  }, [memos]);
+    if (!isClient || memos.length === 0) return;
+    localStorage.setItem('memos', JSON.stringify(memos));
+  }, [memos, isClient]);
   
   useEffect(() => {
-    if (categories.length > 0) {
-        localStorage.setItem('categories', JSON.stringify(categories));
-    }
-  }, [categories]);
+    if (!isClient || categories.length === 0) return;
+    localStorage.setItem('categories', JSON.stringify(categories));
+  }, [categories, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
     localStorage.setItem('backgroundUrl', backgroundUrl);
-  }, [backgroundUrl]);
+  }, [backgroundUrl, isClient]);
   
   useEffect(() => {
+    if (!isClient) return;
     localStorage.setItem('backgroundColor', backgroundColor);
-  }, [backgroundColor]);
+  }, [backgroundColor, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
     localStorage.setItem('backgroundOpacity', String(backgroundOpacity));
-  }, [backgroundOpacity]);
+  }, [backgroundOpacity, isClient]);
 
   useEffect(() => {
-    if (images.length > 0) {
-        localStorage.setItem('images', JSON.stringify(images));
-    }
-  }, [images]);
+    if (!isClient || images.length === 0) return;
+    localStorage.setItem('images', JSON.stringify(images));
+  }, [images, isClient]);
   
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
