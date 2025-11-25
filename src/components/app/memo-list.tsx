@@ -22,7 +22,6 @@ interface MemoListProps {
   memos: Memo[];
   searchTerm: string;
   selectedCategory: string;
-  filteredMemos: Memo[];
   onDeleteMemo: (id: string) => void;
   onUpdateMemo: (memo: Memo) => void;
   onDragEnd: (event: any) => void;
@@ -31,7 +30,7 @@ interface MemoListProps {
   categories: string[];
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, filteredMemos, onDeleteMemo, onUpdateMemo, onDragEnd, images, t, categories }: MemoListProps) {
+export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, onDragEnd, images, t, categories }: MemoListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -39,7 +38,7 @@ export default function MemoList({ memos, searchTerm, selectedCategory, filtered
     })
   );
     
-  if (filteredMemos.length === 0) {
+  if (memos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
         <FileQuestion className="h-16 w-16 mb-4" />
@@ -56,11 +55,11 @@ export default function MemoList({ memos, searchTerm, selectedCategory, filtered
         onDragEnd={onDragEnd}
     >
         <SortableContext
-            items={filteredMemos.map(memo => memo.id)}
+            items={memos.map(memo => memo.id)}
             strategy={verticalListSortingStrategy}
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {filteredMemos.map(memo => (
+                {memos.map(memo => (
                     <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} t={t} categories={categories} />
                 ))}
             </div>

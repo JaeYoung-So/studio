@@ -236,25 +236,24 @@ export default function Home() {
     }
   };
 
-  const filteredMemos = memos.filter(memo => {
-    // 1. Filter by search term first
-    const searchMatch =
-      !searchTerm ||
-      (memo.title && memo.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (memo.content && memo.content.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    if (!searchMatch) {
-      return false;
-    }
-
-    // 2. Then, filter by category
+  const filteredMemos = memos
+  .filter(memo => {
+    // 1. Filter by category first
     if (selectedCategory === t('all')) {
-      return true; // Don't filter by category if 'All' is selected
+      return true;
     }
     if (selectedCategory === t('uncategorized')) {
-      return !memo.category; // Only show memos without a category
+      return !memo.category;
     }
-    return memo.category === selectedCategory; // Show memos matching the selected category
+    return memo.category === selectedCategory;
+  })
+  .filter(memo => {
+    // 2. Then, filter by search term
+    return (
+      !searchTerm ||
+      (memo.title && memo.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (memo.content && memo.content.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
   });
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
@@ -310,10 +309,9 @@ export default function Home() {
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList
-              memos={memos}
+              memos={filteredMemos}
               searchTerm={searchTerm}
               selectedCategory={selectedCategory}
-              filteredMemos={filteredMemos}
               onDeleteMemo={handleDeleteMemo}
               onUpdateMemo={handleUpdateMemo}
               onDragEnd={handleDragEnd}
