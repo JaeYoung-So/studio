@@ -238,20 +238,34 @@ export default function Home() {
     }
   };
 
-  const filteredMemos = memos
-  .filter(memo => {
-    if (!searchTerm) return true;
+  const filteredMemos = memos.filter(memo => {
+    // 1. Category Filter
+    let categoryMatch = false;
+    if (selectedCategory === t('all')) {
+      categoryMatch = true;
+    } else if (selectedCategory === t('uncategorized')) {
+      categoryMatch = !memo.category;
+    } else {
+      categoryMatch = memo.category === selectedCategory;
+    }
+
+    if (!categoryMatch) {
+      return false;
+    }
+    
+    // 2. Search Term Filter
+    if (!searchTerm) {
+      return true; // No search term, so it's a match
+    }
+
     const term = searchTerm.toLowerCase();
-    return (
+    const searchTermMatch = (
       (memo.title && memo.title.toLowerCase().includes(term)) ||
       (memo.content && memo.content.toLowerCase().includes(term)) ||
       (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term))
     );
-  })
-  .filter(memo => {
-    if (selectedCategory === t('all')) return true;
-    if (selectedCategory === t('uncategorized')) return !memo.category;
-    return memo.category === selectedCategory;
+    
+    return searchTermMatch;
   });
 
 
