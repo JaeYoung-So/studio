@@ -98,8 +98,8 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
         )}
     >
         <div className="relative">
-            {memo.coverImageUrl && (
-                <div className="relative h-32 w-full bg-muted/20">
+            <div className="relative h-32 w-full bg-muted/20">
+                {memo.coverImageUrl && (
                     <Image
                         src={memo.coverImageUrl}
                         alt={memo.title}
@@ -107,12 +107,12 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
-                </div>
-            )}
+                )}
+            </div>
             {Icon && (
                 <div className={cn(
-                    "absolute -top-5 left-4 bg-background p-1 rounded-full border",
-                    memo.coverImageUrl ? "top-auto bottom-[-1.5rem] bg-card/80 backdrop-blur-sm" : ""
+                    "absolute left-4 bg-background p-1 rounded-full border",
+                    memo.coverImageUrl ? "top-auto bottom-[-1.5rem] bg-card/80 backdrop-blur-sm" : "-bottom-5"
                 )}>
                     <Icon className="h-8 w-8 text-gray-500" />
                 </div>
@@ -120,8 +120,8 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t }: MemoCa
         </div>
       <div className={cn("relative flex flex-col flex-1")}>
         <CardHeader className={cn(
-            "flex flex-row items-start justify-between space-y-0 pb-2 pt-6",
-            Icon && "pt-8"
+            "flex flex-row items-start justify-between space-y-0 pb-2",
+             Icon ? "pt-8" : "pt-6"
         )}>
             <CardTitle className="text-lg font-headline flex items-center gap-2">
                  {memo.title}
