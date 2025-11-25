@@ -11,6 +11,7 @@ import { colorToRgba } from '@/lib/utils';
 import { arrayMove } from '@dnd-kit/sortable';
 import NewMemoForm from '@/components/app/new-memo-form';
 import { useTranslation, type Language, translations } from '@/lib/i18n';
+import { format } from 'date-fns';
 
 const initialMemos: Omit<Memo, 'id' | 'createdAt'>[] = [
   {
@@ -238,27 +239,23 @@ export default function Home() {
 
   const filteredMemos = memos.filter(memo => {
     const categoryMatch =
-      selectedCategory === t('all')
-        ? true
-        : selectedCategory === t('uncategorized')
-        ? !memo.category
-        : memo.category === selectedCategory;
-
-    if (!categoryMatch) {
-      return false;
-    }
+      selectedCategory === t('all') ||
+      (selectedCategory === t('uncategorized') && !memo.category) ||
+      memo.category === selectedCategory;
 
     if (!searchTerm) {
-      return true;
+      return categoryMatch;
     }
 
     const term = searchTerm.toLowerCase();
     const searchTermMatch =
       (memo.title && memo.title.toLowerCase().includes(term)) ||
-      (memo.content && memo.content.toLowerCase().includes(term));
+      (memo.content && memo.content.toLowerCase().includes(term)) ||
+      (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term));
 
-    return searchTermMatch;
+    return categoryMatch && searchTermMatch;
   });
+
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
   const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
