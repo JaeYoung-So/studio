@@ -98,12 +98,39 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (typeof e.target?.result === 'string') {
-          form.setValue('imageUrl', e.target.result);
+        const img = document.createElement('img');
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 600;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL(file.type);
+
+          form.setValue('imageUrl', dataUrl);
           toast({
             title: t('imageAdded'),
             description: t('imageAddedDesc'),
           });
+        };
+        if (e.target?.result) {
+          img.src = e.target.result as string;
         }
       };
       reader.readAsDataURL(file);
@@ -192,29 +219,29 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
             </Button>
         </div>
 
-        <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} className="space-y-2">
-            <div className="flex justify-start">
-                <CollapsibleTrigger asChild>
-                    <Button type="button" variant="outline" size="sm">
-                        <Palette className="h-4 w-4 mr-2" />
-                        {t('decorate')}
-                    </Button>
-                </CollapsibleTrigger>
+        <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen}>
+          <div className="flex justify-start">
+              <CollapsibleTrigger asChild>
+                  <Button type="button" variant="outline" size="sm">
+                      <Palette className="h-4 w-4 mr-2" />
+                      {t('decorate')}
+                  </Button>
+              </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            <div className="bg-card p-4 rounded-md border mt-2">
+                <MemoToolbar
+                    memo={form.watch()}
+                    onIconChange={handleIconChange}
+                    onCoverImageChange={handleCoverImageChange}
+                    onRemoveCoverImage={handleRemoveCoverImage}
+                    images={images}
+                    isNewMemo={true}
+                    t={t}
+                />
             </div>
-            <CollapsibleContent>
-              <div className="bg-card p-4 rounded-md border">
-                  <MemoToolbar
-                      memo={form.watch()}
-                      onIconChange={handleIconChange}
-                      onCoverImageChange={handleCoverImageChange}
-                      onRemoveCoverImage={handleRemoveCoverImage}
-                      images={images}
-                      isNewMemo={true}
-                      t={t}
-                  />
-              </div>
-            </CollapsibleContent>
-        </Collapsible>
+          </CollapsibleContent>
+      </Collapsible>
 
         <Button type="submit" className="w-full">{t('addMemo')}</Button>
       </form>
