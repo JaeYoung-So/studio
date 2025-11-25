@@ -15,7 +15,7 @@ import {
   ShoppingCart,
   Trash2,
 } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
@@ -24,16 +24,16 @@ interface MemoToolbarProps {
   onIconChange: (icon: string) => void;
   onCoverImageChange: (url: string) => void;
   onRemoveCoverImage: () => void;
+  images: ImagePlaceholder[];
 }
 
 export function MemoToolbar({
   onIconChange,
   onCoverImageChange,
   onRemoveCoverImage,
+  images,
 }: MemoToolbarProps) {
-  const backgroundImages = PlaceHolderImages.filter(p =>
-    p.id.startsWith('bg-')
-  );
+  const backgroundImages = images.filter(p => p.id.startsWith('bg-'));
   const icons = [
     { name: 'smile', component: Smile },
     { name: 'briefcase', component: Briefcase },

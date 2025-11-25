@@ -16,7 +16,7 @@ interface HeaderProps {
   backgroundColor: string;
   backgroundOpacity: number;
   onImageUpload: (imageDataUrl: string) => void;
-  uploadedImages: ImagePlaceholder[];
+  images: ImagePlaceholder[];
   onImageDelete: (imageId: string) => void;
 }
 
@@ -28,7 +28,7 @@ export default function Header({
   backgroundColor,
   backgroundOpacity,
   onImageUpload,
-  uploadedImages,
+  images,
   onImageDelete,
 }: HeaderProps) {
 
@@ -68,7 +68,7 @@ export default function Header({
           onBackgroundOpacityChange={onBackgroundOpacityChange}
           backgroundOpacity={backgroundOpacity}
           onImageUpload={onImageUpload}
-          uploadedImages={uploadedImages}
+          images={images}
           onImageDelete={onImageDelete}
         />
       </div>

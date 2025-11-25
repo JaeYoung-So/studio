@@ -6,7 +6,7 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/app/app-sidebar';
 import Header from '@/components/app/header';
 import MemoList from '@/components/app/memo-list';
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
+import { INITIAL_PLACEHOLDER_IMAGES, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { colorToRgba } from '@/lib/utils';
 
 const initialMemos: Memo[] = [
@@ -17,9 +17,9 @@ const initialMemos: Memo[] = [
     category: '업무',
     isVoiceMemo: false,
     createdAt: new Date('2023-10-26T10:00:00Z'),
-    imageUrl: PlaceHolderImages.find(p => p.id === 'memo-1')?.imageUrl,
+    imageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'memo-1')?.imageUrl,
     icon: 'briefcase',
-    coverImageUrl: PlaceHolderImages.find(p => p.id === 'bg-1')?.imageUrl,
+    coverImageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'bg-1')?.imageUrl,
   },
   {
     id: '2',
@@ -38,7 +38,7 @@ const initialMemos: Memo[] = [
     isVoiceMemo: true,
     createdAt: new Date('2023-10-24T09:00:00Z'),
     icon: 'lightbulb',
-    coverImageUrl: PlaceHolderImages.find(p => p.id === 'bg-3')?.imageUrl,
+    coverImageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'bg-3')?.imageUrl,
   },
 ];
 
@@ -53,7 +53,8 @@ export default function Home() {
   const [backgroundUrl, setBackgroundUrl] = useState('');
   const [backgroundColor, setBackgroundColor] = useState('hsl(210 40% 98%)');
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
-  const [uploadedImages, setUploadedImages] = useState<ImagePlaceholder[]>([]);
+  const [images, setImages] = useState<ImagePlaceholder[]>(INITIAL_PLACEHOLDER_IMAGES);
+
 
   useEffect(() => {
     const storedMemos = localStorage.getItem('memos');
@@ -79,8 +80,12 @@ export default function Home() {
     const storedBgOpacity = localStorage.getItem('backgroundOpacity');
     if (storedBgOpacity) setBackgroundOpacity(parseFloat(storedBgOpacity));
 
-    const storedUploadedImages = localStorage.getItem('uploadedImages');
-    if (storedUploadedImages) setUploadedImages(JSON.parse(storedUploadedImages));
+    const storedImages = localStorage.getItem('images');
+    if (storedImages) {
+      setImages(JSON.parse(storedImages));
+    } else {
+      setImages(INITIAL_PLACEHOLDER_IMAGES);
+    }
   }, []);
 
   useEffect(() => {
@@ -106,8 +111,8 @@ export default function Home() {
   }, [backgroundOpacity]);
 
   useEffect(() => {
-    localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
-  }, [uploadedImages]);
+    localStorage.setItem('images', JSON.stringify(images));
+  }, [images]);
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemo: Memo = {
@@ -167,16 +172,16 @@ export default function Home() {
       imageUrl: imageDataUrl,
       imageHint: 'uploaded'
     };
-    setUploadedImages(prev => [newImage, ...prev]);
+    setImages(prev => [newImage, ...prev]);
     handleBackgroundChange(imageDataUrl);
   };
 
   const handleImageDelete = (imageId: string) => {
-    const imageToDelete = uploadedImages.find(img => img.id === imageId);
+    const imageToDelete = images.find(img => img.id === imageId);
     if(imageToDelete && backgroundUrl === imageToDelete.imageUrl) {
       setBackgroundUrl('');
     }
-    setUploadedImages(prev => prev.filter(image => image.id !== imageId));
+    setImages(prev => prev.filter(image => image.id !== imageId));
   };
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
@@ -217,7 +222,7 @@ export default function Home() {
             backgroundColor={backgroundColor}
             backgroundOpacity={backgroundOpacity}
             onImageUpload={handleImageUpload}
-            uploadedImages={uploadedImages}
+            images={images}
             onImageDelete={handleImageDelete}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
@@ -227,6 +232,7 @@ export default function Home() {
               selectedCategory={selectedCategory}
               onDeleteMemo={handleDeleteMemo}
               onUpdateMemo={handleUpdateMemo}
+              images={images}
             />
           </main>
         </div>

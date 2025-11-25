@@ -10,11 +10,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { MemoToolbar } from './memo-toolbar';
 import * as React from 'react';
+import { type ImagePlaceholder } from '@/lib/placeholder-images';
 
 interface MemoCardProps {
   memo: Memo;
   onDelete: (id: string) => void;
   onUpdate: (memo: Memo) => void;
+  images: ImagePlaceholder[];
 }
 
 const iconMap: { [key: string]: React.ElementType } = {
@@ -25,7 +27,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 
-export default function MemoCard({ memo, onDelete, onUpdate }: MemoCardProps) {
+export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardProps) {
     const Icon = memo.icon ? iconMap[memo.icon] : null;
     
     const handleIconChange = (icon: string) => {
@@ -68,6 +70,7 @@ export default function MemoCard({ memo, onDelete, onUpdate }: MemoCardProps) {
                     onIconChange={handleIconChange} 
                     onCoverImageChange={handleCoverImageChange}
                     onRemoveCoverImage={handleRemoveCoverImage}
+                    images={images}
                 />
                 <Button
                   variant="ghost"

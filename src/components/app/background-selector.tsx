@@ -3,7 +3,7 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Image as ImageIcon, Palette, Upload, X } from 'lucide-react';
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
+import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
@@ -18,7 +18,7 @@ interface BackgroundSelectorProps {
   onBackgroundOpacityChange: (opacity: number) => void;
   backgroundOpacity: number;
   onImageUpload: (imageDataUrl: string) => void;
-  uploadedImages: ImagePlaceholder[];
+  images: ImagePlaceholder[];
   onImageDelete: (imageId: string) => void;
 }
 
@@ -28,12 +28,10 @@ export default function BackgroundSelector({
   onBackgroundOpacityChange, 
   backgroundOpacity,
   onImageUpload,
-  uploadedImages,
+  images,
   onImageDelete,
 }: BackgroundSelectorProps) {
-  const backgroundImages = PlaceHolderImages.filter(p => p.id.startsWith('bg-'));
-  const allImages = [...uploadedImages, ...backgroundImages];
-
+  
   const backgroundColors = [
     'hsl(210 40% 98%)', // default light background
     'hsl(240 10% 3.9%)', // default dark background
@@ -147,7 +145,7 @@ export default function BackgroundSelector({
             </div>
             <ScrollArea className="h-48">
               <div className="grid grid-cols-2 gap-2">
-                {allImages.map(image => (
+                {images.map(image => (
                   <div key={image.id} className="relative group">
                     <button
                       className="relative aspect-video w-full rounded-md overflow-hidden group/button focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -163,18 +161,16 @@ export default function BackgroundSelector({
                       <div className="absolute inset-0 bg-black/20 group-hover/button:bg-black/40 transition-colors" />
                     </button>
                     {image.id.startsWith('uploaded-') && (
-                      <>
-                        <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{image.description}</p>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => onImageDelete(image.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </>
+                      <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{image.description}</p>
                     )}
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => onImageDelete(image.id)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
