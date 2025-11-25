@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -44,8 +45,6 @@ export default function BackgroundSelector({
   onImageDelete,
   t
 }: BackgroundSelectorProps) {
-  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
-
   const backgroundColors = [
     'hsl(0 0% 100%)', // white
     'hsl(222.2 84% 4.9%)', // black
@@ -82,7 +81,6 @@ export default function BackgroundSelector({
 
 
   return (
-    <>
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" aria-label={t('changeBackground')}>
@@ -165,38 +163,51 @@ export default function BackgroundSelector({
             <ScrollArea className="h-48">
               <div className="grid grid-cols-2 gap-2">
                 {images.map(image => (
-                  <div key={image.id} className="relative group">
-                    <button
-                      className="relative aspect-video w-full rounded-md overflow-hidden group/button focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                      onClick={() => onBackgroundChange(image.imageUrl)}
-                    >
-                      <Image
-                        src={image.imageUrl}
-                        alt={image.description}
-                        fill
-                        sizes="150px"
-                        className="object-cover transition-transform group-hover/button:scale-105"
-                        data-ai-hint={image.imageHint}
-                      />
-                      <div className="absolute inset-0 bg-black/20 group-hover/button:bg-black/40 transition-colors" />
-                    </button>
-                    {image.id.startsWith('uploaded-') && (
-                      <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{t('uploaded')}</p>
-                    )}
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setImageToDelete(image.id);
-                        }}
+                   <AlertDialog key={image.id}>
+                    <div className="relative group">
+                      <button
+                        className="relative aspect-video w-full rounded-md overflow-hidden group/button focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        onClick={() => onBackgroundChange(image.imageUrl)}
                       >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                  </div>
+                        <Image
+                          src={image.imageUrl}
+                          alt={image.description}
+                          fill
+                          sizes="150px"
+                          className="object-cover transition-transform group-hover/button:scale-105"
+                          data-ai-hint={image.imageHint}
+                        />
+                        <div className="absolute inset-0 bg-black/20 group-hover/button:bg-black/40 transition-colors" />
+                      </button>
+                      {image.id.startsWith('uploaded-') && (
+                        <p className="absolute bottom-1 left-1 text-white text-[10px] bg-black/50 px-1 rounded-sm pointer-events-none">{t('uploaded')}</p>
+                      )}
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t('deleteImageTitle')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t('deleteImageDesc')}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onImageDelete(image.id)}>
+                              {t('delete')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </div>
+                  </AlertDialog>
                 ))}
               </div>
             </ScrollArea>
@@ -204,29 +215,5 @@ export default function BackgroundSelector({
         </div>
       </PopoverContent>
     </Popover>
-    <AlertDialog open={!!imageToDelete} onOpenChange={(open) => !open && setImageToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteImageTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('deleteImageDesc')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setImageToDelete(null)}>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (imageToDelete) {
-                  onImageDelete(imageToDelete);
-                }
-                setImageToDelete(null);
-              }}
-            >
-              {t('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
   );
 }
