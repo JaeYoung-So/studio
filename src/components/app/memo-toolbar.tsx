@@ -14,13 +14,19 @@ import {
   Smile,
   ShoppingCart,
   Trash2,
+  Upload,
 } from 'lucide-react';
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
+import { type Memo } from '@/lib/types';
+import { useRef } from 'react';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface MemoToolbarProps {
+  memo: Memo;
   onIconChange: (icon: string) => void;
   onCoverImageChange: (url: string) => void;
   onRemoveCoverImage: () => void;
@@ -28,6 +34,7 @@ interface MemoToolbarProps {
 }
 
 export function MemoToolbar({
+  memo,
   onIconChange,
   onCoverImageChange,
   onRemoveCoverImage,
@@ -40,6 +47,30 @@ export function MemoToolbar({
     { name: 'shopping-cart', component: ShoppingCart },
     { name: 'lightbulb', component: Lightbulb },
   ];
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
+  const handleImageUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (typeof e.target?.result === 'string') {
+          onCoverImageChange(e.target.result);
+           toast({
+            title: "커버 이미지 변경됨",
+            description: "새로운 커버 이미지가 적용되었습니다.",
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Popover>
@@ -68,6 +99,7 @@ export function MemoToolbar({
                   variant="outline"
                   size="icon"
                   onClick={() => onIconChange(icon.name)}
+                  className={cn(memo.icon === icon.name && "bg-accent text-accent-foreground")}
                 >
                   <icon.component className="h-4 w-4" />
                 </Button>
@@ -82,15 +114,28 @@ export function MemoToolbar({
               <p className="text-xs font-medium text-muted-foreground">
                 커버
               </p>
-              <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7"
-                  onClick={onRemoveCoverImage}
-                >
-                  <Trash2 className="h-3 w-3 mr-1" />
-                  삭제
+              <div className='flex items-center'>
+                 <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/*"
+                />
+                <Button variant="ghost" size="sm" className="h-7" onClick={handleImageUploadClick}>
+                  <Upload className="h-3 w-3 mr-1" />
+                  업로드
                 </Button>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7"
+                    onClick={onRemoveCoverImage}
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    삭제
+                  </Button>
+              </div>
             </div>
             <ScrollArea className="h-40">
               <div className="grid grid-cols-2 gap-2">

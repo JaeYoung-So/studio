@@ -50,7 +50,8 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
     const Icon = memo.icon ? iconMap[memo.icon] : null;
     
     const handleIconChange = (icon: string) => {
-        onUpdate({ ...memo, icon });
+        const newIcon = memo.icon === icon ? undefined : icon;
+        onUpdate({ ...memo, icon: newIcon });
     };
 
     const handleCoverImageChange = (url: string) => {
@@ -95,6 +96,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                     <GripVertical className="h-5 w-5" />
                 </button>
                 <MemoToolbar 
+                    memo={memo}
                     onIconChange={handleIconChange} 
                     onCoverImageChange={handleCoverImageChange}
                     onRemoveCoverImage={handleRemoveCoverImage}
