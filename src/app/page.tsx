@@ -117,9 +117,15 @@ export default function Home() {
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemo: Memo = {
-      ...memo,
       id: new Date().toISOString(),
       createdAt: new Date(),
+      title: memo.title,
+      content: memo.content,
+      isVoiceMemo: memo.isVoiceMemo,
+      ...(memo.category && { category: memo.category }),
+      ...(memo.imageUrl && { imageUrl: memo.imageUrl }),
+      ...(memo.icon && { icon: memo.icon }),
+      ...(memo.coverImageUrl && { coverImageUrl: memo.coverImageUrl }),
     };
     setMemos(prevMemos => [newMemo, ...prevMemos]);
   };
