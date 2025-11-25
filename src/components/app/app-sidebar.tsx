@@ -108,7 +108,7 @@ export default function AppSidebar({
                   >
                     {category}
                   </SidebarMenuButton>
-                  {category !== '전체' && !['일상', '업무', '아이디어', '중요'].includes(category) && (
+                  {category !== '전체' && category !== '일상' && (
                      <Button
                         variant="ghost"
                         size="icon"
