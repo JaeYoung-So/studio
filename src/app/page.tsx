@@ -169,7 +169,6 @@ export default function Home() {
   };
   
   const handleCategorySelect = (category: string) => {
-    alert(`'${category}'를 눌렀습니다.`);
     setSelectedCategory(category);
   };
 
@@ -239,30 +238,26 @@ export default function Home() {
     }
   };
 
-  const filteredMemos = memos.filter(memo => {
-    // 1. Category filter
-    const categoryMatch = (() => {
-        if (selectedCategory === t('all')) return true;
-        if (selectedCategory === t('uncategorized')) return !memo.category;
-        return memo.category === selectedCategory;
-    })();
-
-    if (!categoryMatch) {
-        return false;
-    }
-
-    // 2. Search term filter (applied on top of category filter)
-    if (!searchTerm) {
-        return true; // No search term, so just return the category-filtered result
-    }
-
-    const term = searchTerm.toLowerCase();
-    const titleMatch = memo.title?.toLowerCase().includes(term);
-    const contentMatch = memo.content?.toLowerCase().includes(term);
-    const dateMatch = format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term);
-
-    return titleMatch || contentMatch || dateMatch;
-});
+  const filteredMemos = memos
+    .filter(memo => {
+      if (selectedCategory === t('all')) {
+        return true;
+      }
+      if (selectedCategory === t('uncategorized')) {
+        return !memo.category;
+      }
+      return memo.category === selectedCategory;
+    })
+    .filter(memo => {
+      if (!searchTerm) {
+        return true;
+      }
+      const term = searchTerm.toLowerCase();
+      const titleMatch = memo.title?.toLowerCase().includes(term);
+      const contentMatch = memo.content?.toLowerCase().includes(term);
+      const dateMatch = format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term);
+      return titleMatch || contentMatch || dateMatch;
+    });
 
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
@@ -282,8 +277,6 @@ export default function Home() {
             onDeleteCategory={handleDeleteCategory}
             onSelectCategory={handleCategorySelect}
             selectedCategory={selectedCategory}
-            backgroundColor={backgroundColor}
-            backgroundOpacity={backgroundOpacity}
             t={t}
         />
       </AppSidebar>
@@ -319,8 +312,6 @@ export default function Home() {
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList
               memos={filteredMemos}
-              searchTerm={searchTerm}
-              selectedCategory={selectedCategory}
               onDeleteMemo={handleDeleteMemo}
               onUpdateMemo={handleUpdateMemo}
               onDragEnd={handleDragEnd}

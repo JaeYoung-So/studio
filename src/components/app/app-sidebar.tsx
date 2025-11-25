@@ -51,8 +51,6 @@ interface AppSidebarCategoriesProps {
   onDeleteCategory: (category: string) => void;
   onSelectCategory: (category: string) => void;
   selectedCategory: string;
-  backgroundColor?: string;
-  backgroundOpacity: number;
   t: (key: any, ...args: any[]) => string;
 }
 
@@ -65,7 +63,8 @@ function AppSidebarCategories({
   t,
 }: AppSidebarCategoriesProps) {
   const allString = t('all');
-  const allCategories = [allString, ...categories, t('uncategorized')];
+  const uncategorizedString = t('uncategorized');
+  const allCategories = [allString, ...categories, uncategorizedString];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
 
@@ -132,7 +131,7 @@ function AppSidebarCategories({
                     >
                     {category}
                     </SidebarMenuButton>
-                    {category !== allString && category !== t('uncategorized') && (
+                    {category !== allString && category !== uncategorizedString && (
                         <>
                          <AlertDialogTrigger asChild>
                             <Button

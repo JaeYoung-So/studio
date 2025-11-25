@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Memo } from '@/lib/types';
@@ -20,8 +21,6 @@ import {
 
 interface MemoListProps {
   memos: Memo[];
-  searchTerm: string;
-  selectedCategory: string;
   onDeleteMemo: (id: string) => void;
   onUpdateMemo: (memo: Memo) => void;
   onDragEnd: (event: any) => void;
@@ -30,7 +29,7 @@ interface MemoListProps {
   categories: string[];
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, onDragEnd, images, t, categories }: MemoListProps) {
+export default function MemoList({ memos, onDeleteMemo, onUpdateMemo, onDragEnd, images, t, categories }: MemoListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
