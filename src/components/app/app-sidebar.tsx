@@ -64,7 +64,7 @@ function AppSidebarCategories({
   t,
 }: AppSidebarCategoriesProps) {
   const allString = t('all');
-  const allCategories = [allString, ...categories];
+  const allCategories = [allString, ...categories, t('uncategorized')];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
 
@@ -131,7 +131,7 @@ function AppSidebarCategories({
                     >
                     {category}
                     </SidebarMenuButton>
-                    {category !== allString && (
+                    {category !== allString && category !== t('uncategorized') && (
                         <>
                          <AlertDialogTrigger asChild>
                             <Button
