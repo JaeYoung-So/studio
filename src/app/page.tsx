@@ -48,6 +48,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [backgroundUrl, setBackgroundUrl] = useState('');
+  const [backgroundColor, setBackgroundColor] = useState('');
 
   useEffect(() => {
     const storedMemos = localStorage.getItem('memos');
@@ -61,6 +62,10 @@ export default function Home() {
     if (storedBg) {
       setBackgroundUrl(storedBg);
     }
+    const storedBgColor = localStorage.getItem('backgroundColor');
+    if(storedBgColor) {
+      setBackgroundColor(storedBgColor);
+    }
   }, []);
 
   useEffect(() => {
@@ -72,6 +77,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem('backgroundUrl', backgroundUrl);
   }, [backgroundUrl]);
+  
+  useEffect(() => {
+    localStorage.setItem('backgroundColor', backgroundColor);
+  }, [backgroundColor]);
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
     const newMemo: Memo = {
@@ -95,6 +104,17 @@ export default function Home() {
       prevMemos.map(memo => (memo.id === updatedMemo.id ? updatedMemo : memo))
     );
   };
+  
+  const handleBackgroundChange = (url: string) => {
+    setBackgroundUrl(url);
+    setBackgroundColor('');
+  }
+  
+  const handleBackgroundColorChange = (color: string) => {
+    setBackgroundColor(color);
+    setBackgroundUrl('');
+  }
+
 
   return (
     <SidebarProvider>
@@ -107,6 +127,7 @@ export default function Home() {
         className="transition-all duration-300 ease-in-out"
         style={{ 
           backgroundImage: backgroundUrl ? `url(${backgroundUrl})` : 'none',
+          backgroundColor: backgroundColor ? backgroundColor : 'transparent',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -115,7 +136,8 @@ export default function Home() {
         <div className="flex flex-col h-full bg-background/80 dark:bg-background/90 backdrop-blur-sm">
           <Header
             onSearch={setSearchTerm}
-            onBackgroundChange={setBackgroundUrl}
+            onBackgroundChange={handleBackgroundChange}
+            onBackgroundColorChange={handleBackgroundColorChange}
           />
           <main className="flex-1 overflow-y-auto p-4 md:p-6">
             <MemoList

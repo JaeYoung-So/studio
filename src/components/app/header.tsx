@@ -9,9 +9,10 @@ import { AppLogo } from '../icons';
 interface HeaderProps {
   onSearch: (term: string) => void;
   onBackgroundChange: (url: string) => void;
+  onBackgroundColorChange: (color: string) => void;
 }
 
-export default function Header({ onSearch, onBackgroundChange }: HeaderProps) {
+export default function Header({ onSearch, onBackgroundChange, onBackgroundColorChange }: HeaderProps) {
   return (
     <header className="flex h-16 items-center gap-4 border-b bg-background/50 px-4 md:px-6 sticky top-0 z-30 backdrop-blur-sm">
       <div className="flex items-center gap-2">
@@ -32,7 +33,7 @@ export default function Header({ onSearch, onBackgroundChange }: HeaderProps) {
             />
           </div>
         </form>
-        <BackgroundSelector onBackgroundChange={onBackgroundChange} />
+        <BackgroundSelector onBackgroundChange={onBackgroundChange} onBackgroundColorChange={onBackgroundColorChange} />
       </div>
     </header>
   );
