@@ -60,6 +60,14 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
                   aria-label={`배경색 ${color}로 변경`}
                 />
               ))}
+               <div className="h-8 w-8 rounded-full border overflow-hidden">
+                <input
+                  type="color"
+                  className="h-10 w-10 -translate-x-1 -translate-y-1 cursor-pointer"
+                  onChange={(e) => onBackgroundColorChange(e.target.value)}
+                  aria-label="사용자 지정 색상 선택"
+                />
+              </div>
             </div>
           </div>
           
