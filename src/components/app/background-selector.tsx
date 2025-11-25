@@ -2,13 +2,14 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Image as ImageIcon, Palette } from 'lucide-react';
+import { Image as ImageIcon, Palette, Upload } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
+import React, { useRef } from 'react';
 
 interface BackgroundSelectorProps {
   onBackgroundChange: (url: string) => void;
@@ -30,6 +31,25 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
     '#bfdbfe',
     '#e9d5ff',
   ];
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (typeof e.target?.result === 'string') {
+          onBackgroundChange(e.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   return (
     <Popover>
@@ -92,11 +112,24 @@ export default function BackgroundSelector({ onBackgroundChange, onBackgroundCol
           <Separator />
 
           <div>
-            <div className="flex items-center mb-2">
-               <ImageIcon className="h-4 w-4 mr-2 text-muted-foreground" />
-               <p className="text-xs font-medium text-muted-foreground">
-                이미지
-              </p>
+             <div className="flex items-center justify-between mb-2">
+               <div className="flex items-center">
+                <ImageIcon className="h-4 w-4 mr-2 text-muted-foreground" />
+                <p className="text-xs font-medium text-muted-foreground">
+                  이미지
+                </p>
+               </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/*"
+                />
+                <Button variant="outline" size="sm" onClick={handleImageUploadClick}>
+                  <Upload className="h-3 w-3 mr-2" />
+                  업로드
+                </Button>
             </div>
             <ScrollArea className="h-48">
               <div className="grid grid-cols-2 gap-2">
