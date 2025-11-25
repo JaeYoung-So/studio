@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Memo } from '@/lib/types';
@@ -115,7 +116,7 @@ export default function Home() {
     }
     // Reset category selection when language changes to avoid mismatches
     setSelectedCategory(t('all'));
-  }, [language, isClient]);
+  }, [language, t, isClient]);
 
   useEffect(() => {
     if (isClient) {

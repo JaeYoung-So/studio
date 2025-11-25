@@ -367,10 +367,10 @@ export default function MemoCard({ memo, onDelete, onUpdate, images, t, categori
               </div>
               <div className="text-right">
                 <div>
-                  {format(new Date(memo.createdAt), lang === 'ko' ? 'yyyy년 M월 d일' : 'PP', { locale: lang === 'ko' ? ko : enUS })}
+                  {format(new Date(memo.createdAt), 'PP', { locale: lang === 'ko' ? ko : enUS })}
                 </div>
                 <div>
-                  {format(new Date(memo.createdAt), lang === 'ko' ? 'p' : 'p', { locale: lang === 'ko' ? ko : enUS })}
+                  {format(new Date(memo.createdAt), 'p', { locale: lang === 'ko' ? ko : enUS })}
                 </div>
               </div>
           </CardFooter>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,8 @@ import { cn, colorToRgba } from '@/lib/utils';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
 import LanguageSelector from './language-selector';
 import { Language } from '@/lib/i18n';
+import { DatePicker } from '../ui/date-picker';
+import { format } from 'date-fns';
 
 interface HeaderProps {
   onSearch: (term: string) => void;
@@ -58,8 +61,7 @@ export default function Header({
          <h1 className="text-xl font-bold font-headline hidden md:block">{t('title')}</h1>
       </div>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <form className="ml-auto flex-1 sm:flex-initial">
-          <div className="relative">
+        <div className="ml-auto flex-1 sm:flex-initial relative flex items-center">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -68,8 +70,8 @@ export default function Header({
               onChange={(e) => onSearch(e.target.value)}
               aria-label={t('searchMemos')}
             />
-          </div>
-        </form>
+            <DatePicker onDateSelect={(date) => onSearch(format(date, 'yyyy-MM-dd'))} />
+        </div>
         <LanguageSelector language={language} setLanguage={setLanguage} t={t} />
         <BackgroundSelector 
           onBackgroundChange={onBackgroundChange} 
