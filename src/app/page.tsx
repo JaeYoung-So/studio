@@ -51,7 +51,7 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [backgroundColor, setBackgroundColor] = useState('hsl(0 0% 100%)');
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
   const [images, setImages] = useState<ImagePlaceholder[]>(INITIAL_PLACEHOLDER_IMAGES);
 
@@ -177,11 +177,13 @@ export default function Home() {
   };
 
   const handleImageDelete = (imageId: string) => {
-    const imageToDelete = images.find(img => img.id === imageId);
-    if(imageToDelete && backgroundUrl === imageToDelete.imageUrl) {
-      setBackgroundUrl('');
-    }
-    setImages(prev => prev.filter(image => image.id !== imageId));
+    setImages(prev => prev.filter(image => {
+        const isDeletingCurrentImage = backgroundUrl === image.imageUrl && image.id === imageId;
+        if(isDeletingCurrentImage) {
+            setBackgroundUrl('');
+        }
+        return image.id !== imageId;
+    }));
   };
 
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);

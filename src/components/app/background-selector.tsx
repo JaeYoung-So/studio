@@ -33,15 +33,15 @@ export default function BackgroundSelector({
 }: BackgroundSelectorProps) {
   
   const backgroundColors = [
-    'hsl(210 40% 98%)', // default light background
-    'hsl(240 10% 3.9%)', // default dark background
-    '#e2e8f0',
-    '#fecaca',
-    '#fed7aa',
-    '#fef08a',
-    '#d9f99d',
-    '#bfdbfe',
-    '#e9d5ff',
+    'hsl(0 0% 100%)', // white
+    'hsl(222.2 84% 4.9%)', // black
+    '#e2e8f0', // slate-200
+    '#fecaca', // red-200
+    '#fed7aa', // orange-200
+    '#fef08a', // yellow-200
+    '#d9f99d', // lime-200
+    '#bfdbfe', // blue-200
+    '#e9d5ff', // purple-200
   ];
   const fileInputRef = useRef<HTMLInputElement>(null);
 
