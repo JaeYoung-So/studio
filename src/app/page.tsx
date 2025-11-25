@@ -55,51 +55,55 @@ export default function Home() {
 
   useEffect(() => {
     setIsClient(true);
-    
-    const storedMemos = localStorage.getItem('memos');
-    if (storedMemos) {
-      setMemos(JSON.parse(storedMemos).map((memo: any) => ({
-        ...memo, 
-        createdAt: new Date(memo.createdAt),
-        imageUrls: memo.imageUrls || (memo.imageUrl ? [memo.imageUrl] : [])
-      })));
-    } else {
-       const currentLang = localStorage.getItem('language') as Language || 'ko';
-       const initialMemoData = initialMemos.map((memo, index) => ({
-        id: `initial-${index + 1}`,
-        createdAt: new Date(Date.now() - index * 1000 * 60 * 60 * 24),
-        ...memo,
-        title: currentLang === 'en' ? `Meeting Prep ${index}` : memo.title,
-        content: currentLang === 'en' ? `Content for memo ${index}` : memo.content,
-        category: currentLang === 'en' ? { '업무': 'Work', '일상': 'Daily', '아이디어': 'Idea' }[memo.category || ''] || 'Misc' : memo.category,
-      }));
-      setMemos(initialMemoData);
-    }
-    
-    const storedCategories = localStorage.getItem('categories');
-    if (storedCategories) {
-      setCategories(JSON.parse(storedCategories));
-    } else {
-      const currentLang = localStorage.getItem('language') as Language || 'ko';
-      setCategories(currentLang === 'en' ? ['Daily', 'Work', 'Idea', 'Important'] : INITIAL_CATEGORIES);
-    }
-
-    const storedBgUrl = localStorage.getItem('backgroundUrl');
-    if (storedBgUrl) setBackgroundUrl(storedBgUrl);
-    
-    const storedBgColor = localStorage.getItem('backgroundColor');
-    if(storedBgColor) setBackgroundColor(storedBgColor);
-    
-    const storedBgOpacity = localStorage.getItem('backgroundOpacity');
-    if (storedBgOpacity) setBackgroundOpacity(parseFloat(storedBgOpacity));
-
-    const storedImages = localStorage.getItem('images');
-    if (storedImages) {
-      setImages(JSON.parse(storedImages));
-    } else {
-      setImages(INITIAL_PLACEHOLDER_IMAGES);
-    }
   }, []);
+  
+  useEffect(() => {
+    if (isClient) {
+      const storedMemos = localStorage.getItem('memos');
+      if (storedMemos) {
+        setMemos(JSON.parse(storedMemos).map((memo: any) => ({
+          ...memo, 
+          createdAt: new Date(memo.createdAt),
+          imageUrls: memo.imageUrls || (memo.imageUrl ? [memo.imageUrl] : [])
+        })));
+      } else {
+         const currentLang = localStorage.getItem('language') as Language || 'ko';
+         const initialMemoData = initialMemos.map((memo, index) => ({
+          id: `initial-${index + 1}`,
+          createdAt: new Date(Date.now() - index * 1000 * 60 * 60 * 24),
+          ...memo,
+          title: currentLang === 'en' ? `Meeting Prep ${index}` : memo.title,
+          content: currentLang === 'en' ? `Content for memo ${index}` : memo.content,
+          category: currentLang === 'en' ? { '업무': 'Work', '일상': 'Daily', '아이디어': 'Idea' }[memo.category || ''] || 'Misc' : memo.category,
+        }));
+        setMemos(initialMemoData);
+      }
+      
+      const storedCategories = localStorage.getItem('categories');
+      if (storedCategories) {
+        setCategories(JSON.parse(storedCategories));
+      } else {
+        const currentLang = localStorage.getItem('language') as Language || 'ko';
+        setCategories(currentLang === 'en' ? ['Daily', 'Work', 'Idea', 'Important'] : INITIAL_CATEGORIES);
+      }
+  
+      const storedBgUrl = localStorage.getItem('backgroundUrl');
+      if (storedBgUrl) setBackgroundUrl(storedBgUrl);
+      
+      const storedBgColor = localStorage.getItem('backgroundColor');
+      if(storedBgColor) setBackgroundColor(storedBgColor);
+      
+      const storedBgOpacity = localStorage.getItem('backgroundOpacity');
+      if (storedBgOpacity) setBackgroundOpacity(parseFloat(storedBgOpacity));
+  
+      const storedImages = localStorage.getItem('images');
+      if (storedImages) {
+        setImages(JSON.parse(storedImages));
+      } else {
+        setImages(INITIAL_PLACEHOLDER_IMAGES);
+      }
+    }
+  }, [isClient]);
 
   useEffect(() => {
     if (!isClient) return;
