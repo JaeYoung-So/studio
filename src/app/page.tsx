@@ -135,7 +135,7 @@ export default function Home() {
   const handleDeleteCategory = (categoryToDelete: string) => {
     setCategories(prev => prev.filter(c => c !== categoryToDelete));
     setMemos(prevMemos => prevMemos.map(memo => 
-      memo.category === categoryToDelete ? { ...memo, category: '일상' } : memo
+      memo.category === categoryToDelete ? { ...memo, category: undefined } : memo
     ));
     if (selectedCategory === categoryToDelete) {
       setSelectedCategory('전체');

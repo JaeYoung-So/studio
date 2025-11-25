@@ -16,7 +16,7 @@ import { useRef, useState } from 'react';
 const formSchema = z.object({
   title: z.string().min(1, { message: '제목을 입력해주세요.' }).max(50),
   content: z.string().min(1, { message: '내용을 입력해주세요.' }),
-  category: z.string().min(1, { message: '카테고리를 선택해주세요.' }),
+  category: z.string().optional(),
   imageUrl: z.string().optional(),
   isVoiceMemo: z.boolean(),
 });
@@ -119,10 +119,11 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
               <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="카테고리 선택" />
+                    <SelectValue placeholder="카테고리 선택 (선택 사항)" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  <SelectItem value="">미분류</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}

@@ -15,7 +15,10 @@ interface MemoListProps {
 export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo }: MemoListProps) {
   const filteredMemos = memos
     .filter(memo => {
-      const categoryMatch = selectedCategory === '전체' || memo.category === selectedCategory;
+      const categoryMatch =
+        selectedCategory === '전체' ||
+        (selectedCategory === '미분류' && !memo.category) ||
+        memo.category === selectedCategory;
       const searchMatch =
         searchTerm === '' ||
         memo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

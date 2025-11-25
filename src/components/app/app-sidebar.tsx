@@ -33,7 +33,7 @@ export default function AppSidebar({
   backgroundColor, 
   backgroundOpacity 
 }: AppSidebarProps) {
-  const allCategories = ['전체', ...categories];
+  const allCategories = ['전체', '미분류', ...categories];
   const [newCategory, setNewCategory] = useState('');
   const { toast } = useToast();
 
@@ -108,7 +108,7 @@ export default function AppSidebar({
                   >
                     {category}
                   </SidebarMenuButton>
-                  {category !== '전체' && category !== '일상' && (
+                  {category !== '전체' && category !== '미분류' && (
                      <Button
                         variant="ghost"
                         size="icon"

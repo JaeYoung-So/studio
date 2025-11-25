@@ -97,7 +97,7 @@ export default function MemoCard({ memo, onDelete, onUpdate }: MemoCardProps) {
         </CardContent>
         <CardFooter className="flex justify-between items-center text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-            <Badge variant="secondary">{memo.category}</Badge>
+            {memo.category && <Badge variant="secondary">{memo.category}</Badge>}
             {memo.isVoiceMemo && (
                 <div className="flex items-center gap-1">
                 <Mic className="h-4 w-4" />
