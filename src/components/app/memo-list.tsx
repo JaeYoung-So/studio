@@ -9,9 +9,10 @@ interface MemoListProps {
   searchTerm: string;
   selectedCategory: string;
   onDeleteMemo: (id: string) => void;
+  onUpdateMemo: (memo: Memo) => void;
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo }: MemoListProps) {
+export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo }: MemoListProps) {
   const filteredMemos = memos
     .filter(memo => {
       const categoryMatch = selectedCategory === '전체' || memo.category === selectedCategory;
@@ -36,7 +37,7 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
       {filteredMemos.map(memo => (
-        <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} />
+        <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} />
       ))}
     </div>
   );

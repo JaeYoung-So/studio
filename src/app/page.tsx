@@ -18,6 +18,8 @@ const initialMemos: Memo[] = [
     isVoiceMemo: false,
     createdAt: new Date('2023-10-26T10:00:00Z'),
     imageUrl: PlaceHolderImages.find(p => p.id === 'memo-1')?.imageUrl,
+    icon: 'briefcase',
+    coverImageUrl: PlaceHolderImages.find(p => p.id === 'bg-1')?.imageUrl,
   },
   {
     id: '2',
@@ -26,6 +28,7 @@ const initialMemos: Memo[] = [
     category: '일상',
     isVoiceMemo: false,
     createdAt: new Date('2023-10-25T15:30:00Z'),
+    icon: 'shopping-cart',
   },
   {
     id: '3',
@@ -34,6 +37,8 @@ const initialMemos: Memo[] = [
     category: '아이디어',
     isVoiceMemo: true,
     createdAt: new Date('2023-10-24T09:00:00Z'),
+    icon: 'lightbulb',
+    coverImageUrl: PlaceHolderImages.find(p => p.id === 'bg-3')?.imageUrl,
   },
 ];
 
@@ -84,6 +89,12 @@ export default function Home() {
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
   };
+  
+  const handleUpdateMemo = (updatedMemo: Memo) => {
+    setMemos(prevMemos =>
+      prevMemos.map(memo => (memo.id === updatedMemo.id ? updatedMemo : memo))
+    );
+  };
 
   return (
     <SidebarProvider>
@@ -112,6 +123,7 @@ export default function Home() {
               searchTerm={searchTerm}
               selectedCategory={selectedCategory}
               onDeleteMemo={handleDeleteMemo}
+              onUpdateMemo={handleUpdateMemo}
             />
           </main>
         </div>
