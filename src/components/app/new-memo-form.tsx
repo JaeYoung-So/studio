@@ -60,10 +60,10 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
     form.reset();
     setIsVoice(false);
     
-    toast({
-        title: '성공',
-        description: '메모가 성공적으로 추가되었습니다.',
-    });
+    // toast({
+    //     title: '성공',
+    //     description: '메모가 성공적으로 추가되었습니다.',
+    // });
   }
   
   const handleToggleVoiceMemo = () => {
@@ -165,33 +165,33 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
           className="hidden"
           accept="image/*"
         />
-        <Collapsible>
-          <div className="flex justify-between items-center gap-2">
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
-                    <ImagePlus className="h-4 w-4" />
-                </Button>
-                <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">
-                    <Mic className="h-4 w-4" />
-                </Button>
-              </div>
+        <div className="flex justify-between items-center gap-2">
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
+                  <ImagePlus className="h-4 w-4" />
+              </Button>
+              <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">
+                  <Mic className="h-4 w-4" />
+              </Button>
+            </div>
+            <Collapsible>
               <CollapsibleTrigger asChild>
                 <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
                     <Palette className="h-4 w-4" />
                 </Button>
               </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent>
-            <MemoToolbar
-              memo={form.getValues()}
-              onIconChange={handleIconChange}
-              onCoverImageChange={handleCoverImageChange}
-              onRemoveCoverImage={handleRemoveCoverImage}
-              images={INITIAL_PLACEHOLDER_IMAGES}
-              isNewMemo={true}
-            />
-          </CollapsibleContent>
-        </Collapsible>
+              <CollapsibleContent className="mt-2">
+                <MemoToolbar
+                  memo={form.getValues()}
+                  onIconChange={handleIconChange}
+                  onCoverImageChange={handleCoverImageChange}
+                  onRemoveCoverImage={handleRemoveCoverImage}
+                  images={INITIAL_PLACEHOLDER_IMAGES}
+                  isNewMemo={true}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+        </div>
         <Button type="submit" className="w-full">메모 추가</Button>
       </form>
     </Form>

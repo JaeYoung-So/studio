@@ -107,6 +107,7 @@ export function MemoToolbar({
               key={icon.name}
               variant="outline"
               size="icon"
+              type="button"
               onClick={() => onIconChange(icon.name)}
               className={cn(memo.icon === icon.name && "bg-accent text-accent-foreground")}
             >
@@ -131,11 +132,12 @@ export function MemoToolbar({
               className="hidden"
               accept="image/*"
             />
-            <Button variant="ghost" size="sm" className="h-7" onClick={handleImageUploadClick}>
+            <Button type="button" variant="ghost" size="sm" className="h-7" onClick={handleImageUploadClick}>
               <Upload className="h-3 w-3 mr-1" />
               업로드
             </Button>
             <Button
+                type="button"
                 variant="ghost"
                 size="sm"
                 className="h-7"
@@ -151,6 +153,7 @@ export function MemoToolbar({
             {[...backgroundImages, ...memoImages].map(image => (
               <button
                 key={image.id}
+                type="button"
                 className={cn(
                   "relative aspect-video w-full rounded-md overflow-hidden group focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
                   memo.coverImageUrl === image.imageUrl && "ring-2 ring-ring ring-offset-2"
