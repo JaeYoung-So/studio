@@ -51,7 +51,7 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
-  const [backgroundColor, setBackgroundColor] = useState('hsl(210 40% 98%)');
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
   const [images, setImages] = useState<ImagePlaceholder[]>(INITIAL_PLACEHOLDER_IMAGES);
 
