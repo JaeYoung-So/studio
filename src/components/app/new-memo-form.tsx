@@ -10,8 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import type { Memo } from '@/lib/types';
-import { ImagePlus, Mic } from 'lucide-react';
+import { ImagePlus, Mic, Palette } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { INITIAL_PLACEHOLDER_IMAGES } from '@/lib/placeholder-images';
+import { MemoToolbar } from './memo-toolbar';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 
 const formSchema = z.object({
   title: z.string().min(1, { message: '제목을 입력해주세요.' }).max(50),
@@ -19,6 +22,8 @@ const formSchema = z.object({
   category: z.string().optional(),
   imageUrl: z.string().optional(),
   isVoiceMemo: z.boolean(),
+  icon: z.string().optional(),
+  coverImageUrl: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -41,6 +46,8 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
       category: '',
       imageUrl: '',
       isVoiceMemo: false,
+      icon: undefined,
+      coverImageUrl: undefined,
     },
   });
 
@@ -81,6 +88,19 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
     }
   };
 
+  const handleIconChange = (icon: string) => {
+    const newIcon = form.getValues('icon') === icon ? undefined : icon;
+    form.setValue('icon', newIcon);
+  };
+
+  const handleCoverImageChange = (url: string) => {
+    form.setValue('coverImageUrl', url);
+  };
+  
+  const handleRemoveCoverImage = () => {
+    form.setValue('coverImageUrl', undefined);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -116,7 +136,7 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
           render={({ field }) => (
             <FormItem>
               <FormLabel>카테고리</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value || ''}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="카테고리 선택 (선택 사항)" />
@@ -140,13 +160,33 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
           className="hidden"
           accept="image/*"
         />
-        <div className="flex gap-2">
-            <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
-                <ImagePlus className="h-4 w-4" />
-            </Button>
-            <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">
-                <Mic className="h-4 w-4" />
-            </Button>
+        <div className="flex justify-between gap-2">
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label="이미지 업로드">
+                  <ImagePlus className="h-4 w-4" />
+              </Button>
+              <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label="음성 메모 녹음">
+                  <Mic className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <Button type="button" variant="outline" size="icon" aria-label="꾸미기">
+                    <Palette className="h-4 w-4" />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <MemoToolbar
+                  memo={form.getValues()}
+                  onIconChange={handleIconChange}
+                  onCoverImageChange={handleCoverImageChange}
+                  onRemoveCoverImage={handleRemoveCoverImage}
+                  images={INITIAL_PLACEHOLDER_IMAGES}
+                  isNewMemo={true}
+                />
+              </CollapsibleContent>
+            </Collapsible>
         </div>
         <Button type="submit" className="w-full">메모 추가</Button>
       </form>

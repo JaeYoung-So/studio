@@ -70,20 +70,22 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
             "flex flex-col overflow-hidden transition-shadow hover:shadow-xl duration-300 ease-in-out bg-card/80 backdrop-blur-sm touch-none"
         )}
     >
-      {memo.coverImageUrl && (
+      {(memo.coverImageUrl || memo.icon) && (
           <div className="relative h-32 w-full">
-            <Image
-              src={memo.coverImageUrl}
-              alt={memo.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
+            {memo.coverImageUrl && (
+              <Image
+                src={memo.coverImageUrl}
+                alt={memo.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            )}
           </div>
       )}
       <div className="relative">
         {Icon && (
-          <div className="absolute -top-5 left-4 bg-background p-1 rounded-full">
+          <div className="absolute -top-5 left-4 bg-background p-1 rounded-full border">
             <Icon className="h-8 w-8 text-gray-500" />
           </div>
         )}
@@ -101,6 +103,7 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                     onCoverImageChange={handleCoverImageChange}
                     onRemoveCoverImage={handleRemoveCoverImage}
                     images={images}
+                    onUpdate={onUpdate}
                 />
                 <Button
                   variant="ghost"
