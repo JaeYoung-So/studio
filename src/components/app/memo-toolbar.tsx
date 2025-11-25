@@ -45,7 +45,7 @@ export function MemoToolbar({
   isNewMemo = false
 }: MemoToolbarProps) {
   const backgroundImages = images.filter(p => p.id.startsWith('bg-'));
-  const memoImages = images.filter(p => p.id.startsWith('memo-'));
+  const memoImages = images.filter(p => !p.id.startsWith('bg-'));
 
   const icons = [
     { name: 'smile', component: Smile },
