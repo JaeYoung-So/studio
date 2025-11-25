@@ -28,6 +28,7 @@ import { type Memo } from '@/lib/types';
 import { useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { CollapsibleContent } from '../ui/collapsible';
 
 interface MemoToolbarProps {
   memo: Partial<Memo>;
@@ -38,6 +39,9 @@ interface MemoToolbarProps {
   onUpdate?: (memo: Partial<Memo>) => void;
   isNewMemo?: boolean;
   t: (key: any, ...args: any[]) => string;
+  isEditing?: boolean;
+  isDecoratorOpen?: boolean;
+  setIsDecoratorOpen?: (open: boolean) => void;
 }
 
 export function MemoToolbar({
@@ -49,6 +53,9 @@ export function MemoToolbar({
   onUpdate,
   isNewMemo = false,
   t,
+  isEditing = false,
+  isDecoratorOpen,
+  setIsDecoratorOpen
 }: MemoToolbarProps) {
 
   const icons = [
@@ -132,13 +139,6 @@ export function MemoToolbar({
     }
   };
   
-  const TriggerButton = isNewMemo ? Button : PopoverTrigger;
-  const Content = isNewMemo ? 'div' : PopoverContent;
-
-  const contentProps = isNewMemo 
-    ? { className: "grid gap-4 mt-4" }
-    : { className: "w-80", align: "end" as "end" };
-
   const currentMemoImages = [
     ...(memo.imageUrls ? memo.imageUrls.map((url, i) => ({ id: `current-image-${i}`, imageUrl: url, description: 'Current', imageHint: 'current' })) : []),
     ...(memo.coverImageUrl && (!memo.imageUrls || !memo.imageUrls.includes(memo.coverImageUrl)) ? [{ id: 'current-cover', imageUrl: memo.coverImageUrl, description: 'Current Cover', imageHint: 'current cover' }] : [])
@@ -246,6 +246,16 @@ export function MemoToolbar({
   if (isNewMemo) {
     return toolbarContent;
   }
+  
+  if (isEditing) {
+    return (
+       <CollapsibleContent>
+            <div className="bg-card p-4 rounded-md border mt-2">
+                {toolbarContent}
+            </div>
+       </CollapsibleContent>
+    )
+  }
 
   return (
     <Popover>
@@ -254,7 +264,7 @@ export function MemoToolbar({
           <MoreVertical className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent {...contentProps}>
+      <PopoverContent className="w-80" align="end">
         {toolbarContent}
       </PopoverContent>
     </Popover>

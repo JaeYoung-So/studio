@@ -12,35 +12,26 @@ import { arrayMove } from '@dnd-kit/sortable';
 import NewMemoForm from '@/components/app/new-memo-form';
 import { useTranslation, type Language, translations } from '@/lib/i18n';
 
-const initialMemos: Memo[] = [
+const initialMemos: Omit<Memo, 'id' | 'createdAt'>[] = [
   {
-    id: '1',
     title: '회의 준비',
     content: '다음 주 월요일 팀 회의 안건 정리. 1분기 실적 보고 및 2분기 계획 발표.',
     category: '업무',
-    isVoiceMemo: false,
-    createdAt: new Date('2023-10-26T10:00:00Z'),
     imageUrls: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'memo-1') ? [INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'memo-1')!.imageUrl] : [],
     icon: 'briefcase',
     coverImageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'bg-1')?.imageUrl,
   },
   {
-    id: '2',
     title: '장보기 목록',
     content: '우유, 계란, 빵, 야채 (양파, 토마토)',
     category: '일상',
-    isVoiceMemo: false,
-    createdAt: new Date('2023-10-25T15:30:00Z'),
     icon: 'shopping-cart',
     imageUrls: [],
   },
   {
-    id: '3',
     title: '주말 산행 아이디어',
     content: '북한산 등반 코스 알아보기. 친구들에게 연락해서 일정 조율.',
     category: '아이디어',
-    isVoiceMemo: true,
-    createdAt: new Date('2023-10-24T09:00:00Z'),
     icon: 'lightbulb',
     imageUrls: [],
     coverImageUrl: INITIAL_PLACEHOLDER_IMAGES.find(p => p.id === 'bg-3')?.imageUrl,
@@ -73,12 +64,15 @@ export default function Home() {
         imageUrls: memo.imageUrls || (memo.imageUrl ? [memo.imageUrl] : [])
       })));
     } else {
-       setMemos(initialMemos.map(memo => ({
+       const initialMemoData = initialMemos.map((memo, index) => ({
+        id: `initial-${index + 1}`,
+        createdAt: new Date(Date.now() - index * 1000 * 60 * 60 * 24),
         ...memo,
-        title: language === 'en' ? `Meeting Prep ${memo.id}` : memo.title,
-        content: language === 'en' ? `Content for memo ${memo.id}` : memo.content,
+        title: language === 'en' ? `Meeting Prep ${index}` : memo.title,
+        content: language === 'en' ? `Content for memo ${index}` : memo.content,
         category: language === 'en' ? { '업무': 'Work', '일상': 'Daily', '아이디어': 'Idea' }[memo.category || ''] || 'Misc' : memo.category,
-      })));
+      }));
+      setMemos(initialMemoData);
     }
     
     const storedCategories = localStorage.getItem('categories');
@@ -115,19 +109,18 @@ export default function Home() {
   }, [t, isClient]);
 
   useEffect(() => {
-    if (!isClient) return;
-     if (isClient) {
+    if (isClient) {
       setSelectedCategory(t('all'));
     }
   }, [language, isClient, t]);
 
   useEffect(() => {
-    if (!isClient || memos.length === 0) return;
+    if (!isClient || memos.length === 0 && localStorage.getItem('memos') === null) return;
     localStorage.setItem('memos', JSON.stringify(memos));
   }, [memos, isClient]);
   
   useEffect(() => {
-    if (!isClient || categories.length === 0) return;
+    if (!isClient || categories.length === 0 && localStorage.getItem('categories') === null) return;
     localStorage.setItem('categories', JSON.stringify(categories));
   }, [categories, isClient]);
 
@@ -147,17 +140,16 @@ export default function Home() {
   }, [backgroundOpacity, isClient]);
 
   useEffect(() => {
-    if (!isClient || images.length === 0) return;
+    if (!isClient || images.length === 0 && localStorage.getItem('images') === null) return;
     localStorage.setItem('images', JSON.stringify(images));
   }, [images, isClient]);
   
 
   const handleAddMemo = (memo: Omit<Memo, 'id' | 'createdAt'>) => {
-    const newMemoData: Omit<Memo, 'id' | 'createdAt'> = {...memo};
     const newMemo: Memo = {
       id: new Date().toISOString(),
       createdAt: new Date(),
-      ...newMemoData
+      ...memo
     };
     setMemos(prevMemos => [newMemo, ...prevMemos]);
   };
@@ -311,6 +303,7 @@ export default function Home() {
               onDragEnd={handleDragEnd}
               images={images}
               t={t}
+              categories={categories}
             />
           </main>
         </div>

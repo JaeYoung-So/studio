@@ -4,7 +4,6 @@ export interface Memo {
   content: string;
   category?: string;
   imageUrls?: string[];
-  isVoiceMemo: boolean;
   createdAt: Date;
   icon?: string;
   coverImageUrl?: string;

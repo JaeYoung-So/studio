@@ -28,9 +28,10 @@ interface MemoListProps {
   onDragEnd: (event: any) => void;
   images: ImagePlaceholder[];
   t: (key: any) => string;
+  categories: string[];
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, filteredMemos, onDeleteMemo, onUpdateMemo, onDragEnd, images, t }: MemoListProps) {
+export default function MemoList({ memos, searchTerm, selectedCategory, filteredMemos, onDeleteMemo, onUpdateMemo, onDragEnd, images, t, categories }: MemoListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -48,10 +49,6 @@ export default function MemoList({ memos, searchTerm, selectedCategory, filtered
     );
   }
 
-  const sortedMemos = searchTerm === '' && selectedCategory === t('all') 
-  ? memos
-  : filteredMemos;
-
   return (
     <DndContext
         sensors={sensors}
@@ -59,12 +56,12 @@ export default function MemoList({ memos, searchTerm, selectedCategory, filtered
         onDragEnd={onDragEnd}
     >
         <SortableContext
-            items={sortedMemos.map(memo => memo.id)}
+            items={filteredMemos.map(memo => memo.id)}
             strategy={verticalListSortingStrategy}
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {sortedMemos.map(memo => (
-                    <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} t={t} />
+                {filteredMemos.map(memo => (
+                    <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} t={t} categories={categories} />
                 ))}
             </div>
         </SortableContext>
