@@ -183,15 +183,13 @@ export default function NewMemoForm({ onAddMemo, categories, images, t }: NewMem
           className="hidden"
           accept="image/*"
         />
-        <div className="space-y-2">
-            <div className="flex gap-2">
-                <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
-                    <ImagePlus className="h-4 w-4" />
-                </Button>
-                <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label={t('recordVoiceMemo')}>
-                    <Mic className="h-4 w-4" />
-                </Button>
-            </div>
+        <div className="flex gap-2">
+            <Button type="button" variant="outline" size="icon" onClick={handleImageUploadClick} aria-label={t('uploadImage')}>
+                <ImagePlus className="h-4 w-4" />
+            </Button>
+            <Button type="button" variant={isVoice ? "secondary" : "outline"} size="icon" onClick={handleToggleVoiceMemo} aria-label={t('recordVoiceMemo')}>
+                <Mic className="h-4 w-4" />
+            </Button>
         </div>
 
         <Collapsible open={isDecoratorOpen} onOpenChange={setIsDecoratorOpen} className="space-y-2">

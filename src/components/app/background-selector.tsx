@@ -73,10 +73,6 @@ export default function BackgroundSelector({
       };
       reader.readAsDataURL(file);
     }
-    // Reset file input to allow uploading the same file again
-    if(event.target) {
-        event.target.value = '';
-    }
   };
 
 
