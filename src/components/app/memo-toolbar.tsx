@@ -97,7 +97,7 @@ export function MemoToolbar({
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL(file.type);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
           
           onCoverImageChange(dataUrl);
           if (!isNewMemo) {

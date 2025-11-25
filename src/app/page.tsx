@@ -111,7 +111,7 @@ export default function Home() {
   useEffect(() => {
     if (!isClient) return;
     setSelectedCategory(t('all'));
-  }, [language, t, isClient]);
+  }, [language, isClient]);
 
   useEffect(() => {
     if (!isClient || memos.length === 0) return;
@@ -231,6 +231,19 @@ export default function Home() {
     }
   };
 
+  const filteredMemos = memos.filter(memo => {
+    const categoryMatch =
+      selectedCategory === t('all') ||
+      memo.category === selectedCategory ||
+      (selectedCategory === t('uncategorized') && !memo.category);
+
+    const searchMatch =
+      searchTerm === '' ||
+      memo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      memo.content.toLowerCase().includes(searchTerm.toLowerCase());
+    return categoryMatch && searchMatch;
+  });
+
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
   const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
 
@@ -287,6 +300,7 @@ export default function Home() {
               memos={memos}
               searchTerm={searchTerm}
               selectedCategory={selectedCategory}
+              filteredMemos={filteredMemos}
               onDeleteMemo={handleDeleteMemo}
               onUpdateMemo={handleUpdateMemo}
               onDragEnd={handleDragEnd}

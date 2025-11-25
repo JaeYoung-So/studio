@@ -6,6 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function colorToRgba(color: string, alpha: number): string {
+  if (typeof window === 'undefined') {
+    // Return a transparent color during server-side rendering
+    return `rgba(255, 255, 255, 0)`;
+  }
+  
   if (!color) return `rgba(255, 255, 255, ${alpha})`;
 
   if (color.startsWith('rgba')) {
@@ -64,5 +69,5 @@ export function colorToRgba(color: string, alpha: number): string {
     return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${alpha})`;
   }
 
-  return color; // fallback
+  return `rgba(255, 255, 255, ${alpha})`; // fallback
 }

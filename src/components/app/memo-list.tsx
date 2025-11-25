@@ -22,6 +22,7 @@ interface MemoListProps {
   memos: Memo[];
   searchTerm: string;
   selectedCategory: string;
+  filteredMemos: Memo[];
   onDeleteMemo: (id: string) => void;
   onUpdateMemo: (memo: Memo) => void;
   onDragEnd: (event: any) => void;
@@ -29,27 +30,13 @@ interface MemoListProps {
   t: (key: any) => string;
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, onDragEnd, images, t }: MemoListProps) {
+export default function MemoList({ memos, searchTerm, selectedCategory, filteredMemos, onDeleteMemo, onUpdateMemo, onDragEnd, images, t }: MemoListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-    
-  const filteredMemos = memos
-    .filter(memo => {
-      const categoryMatch =
-        selectedCategory === t('all') ||
-        memo.category === selectedCategory ||
-        (selectedCategory === t('uncategorized') && !memo.category);
-
-      const searchMatch =
-        searchTerm === '' ||
-        memo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        memo.content.toLowerCase().includes(searchTerm.toLowerCase());
-      return categoryMatch && searchMatch;
-    })
     
   if (filteredMemos.length === 0) {
     return (
@@ -61,7 +48,7 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
     );
   }
 
-  const sortedMemos = selectedCategory === t('all') && searchTerm === '' 
+  const sortedMemos = searchTerm === '' && selectedCategory === t('all') 
   ? memos
   : filteredMemos;
 
