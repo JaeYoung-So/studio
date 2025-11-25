@@ -17,13 +17,13 @@ interface AppSidebarProps {
 export default function AppSidebar({ onAddMemo, onSelectCategory, selectedCategory, backgroundColor }: AppSidebarProps) {
   const allCategories = ['전체', ...CATEGORIES];
 
-  const sidebarStyle = backgroundColor
+  const scrollAreaStyle = backgroundColor
     ? { backgroundColor: hslToRgba(backgroundColor, 0.9) }
     : {};
 
   return (
-    <Sidebar style={sidebarStyle} className={cn(backgroundColor && 'border-none')}>
-      <ScrollArea className="h-full">
+    <Sidebar className={cn(backgroundColor && 'border-none')}>
+      <ScrollArea className="h-full rounded-lg" style={scrollAreaStyle}>
         <SidebarHeader>
           <h2 className="text-lg font-headline font-semibold">새 메모</h2>
           <NewMemoForm onAddMemo={onAddMemo} />
