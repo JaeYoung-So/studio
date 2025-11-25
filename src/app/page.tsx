@@ -8,6 +8,7 @@ import Header from '@/components/app/header';
 import MemoList from '@/components/app/memo-list';
 import { INITIAL_PLACEHOLDER_IMAGES, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { colorToRgba } from '@/lib/utils';
+import { arrayMove } from '@dnd-kit/sortable';
 
 const initialMemos: Memo[] = [
   {
@@ -51,7 +52,7 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>(INITIAL_CATEGORIES);
   
   const [backgroundUrl, setBackgroundUrl] = useState('');
-  const [backgroundColor, setBackgroundColor] = useState('hsl(0 0% 100%)');
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.8);
   const [images, setImages] = useState<ImagePlaceholder[]>(INITIAL_PLACEHOLDER_IMAGES);
 
@@ -186,6 +187,17 @@ export default function Home() {
     }));
   };
 
+  const handleDragEnd = (event: any) => {
+    const {active, over} = event;
+    if (active.id !== over.id) {
+      setMemos((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
   const finalBackgroundColor = colorToRgba(backgroundColor, 1);
   const finalOverlayColor = colorToRgba(backgroundColor, backgroundOpacity);
 
@@ -234,6 +246,7 @@ export default function Home() {
               selectedCategory={selectedCategory}
               onDeleteMemo={handleDeleteMemo}
               onUpdateMemo={handleUpdateMemo}
+              onDragEnd={handleDragEnd}
               images={images}
             />
           </main>

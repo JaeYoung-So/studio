@@ -4,13 +4,16 @@ import type { Memo } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Mic, Trash2, Smile, Briefcase, ShoppingCart, Lightbulb } from 'lucide-react';
+import { Mic, Trash2, Smile, Briefcase, ShoppingCart, Lightbulb, GripVertical } from 'lucide-react';
 import Image from 'next/image';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { MemoToolbar } from './memo-toolbar';
 import * as React from 'react';
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { cn } from '@/lib/utils';
 
 interface MemoCardProps {
   memo: Memo;
@@ -28,6 +31,22 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 
 export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardProps) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+      } = useSortable({id: memo.id});
+      
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 10 : 'auto',
+        opacity: isDragging ? 0.5 : 1,
+    };
+
     const Icon = memo.icon ? iconMap[memo.icon] : null;
     
     const handleIconChange = (icon: string) => {
@@ -43,7 +62,13 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
     }
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all hover:shadow-xl duration-300 ease-in-out bg-card/80 backdrop-blur-sm">
+    <Card 
+        ref={setNodeRef} 
+        style={style}
+        className={cn(
+            "flex flex-col overflow-hidden transition-shadow hover:shadow-xl duration-300 ease-in-out bg-card/80 backdrop-blur-sm touch-none"
+        )}
+    >
       {memo.coverImageUrl && (
           <div className="relative h-32 w-full">
             <Image
@@ -66,6 +91,9 @@ export default function MemoCard({ memo, onDelete, onUpdate, images }: MemoCardP
                  {memo.title}
             </CardTitle>
             <div className="flex items-center">
+                <button {...attributes} {...listeners} className="cursor-grab p-2 text-muted-foreground hover:bg-accent rounded-md">
+                    <GripVertical className="h-5 w-5" />
+                </button>
                 <MemoToolbar 
                     onIconChange={handleIconChange} 
                     onCoverImageChange={handleCoverImageChange}

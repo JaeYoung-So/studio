@@ -4,6 +4,19 @@ import type { Memo } from '@/lib/types';
 import MemoCard from './memo-card';
 import { FileQuestion } from 'lucide-react';
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+  } from '@dnd-kit/core';
+  import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+  } from '@dnd-kit/sortable';
 
 interface MemoListProps {
   memos: Memo[];
@@ -11,16 +24,24 @@ interface MemoListProps {
   selectedCategory: string;
   onDeleteMemo: (id: string) => void;
   onUpdateMemo: (memo: Memo) => void;
+  onDragEnd: (event: any) => void;
   images: ImagePlaceholder[];
 }
 
-export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, images }: MemoListProps) {
+export default function MemoList({ memos, searchTerm, selectedCategory, onDeleteMemo, onUpdateMemo, onDragEnd, images }: MemoListProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+    
   const filteredMemos = memos
     .filter(memo => {
       const categoryMatch =
         selectedCategory === '전체' ||
-        (selectedCategory !== '전체' && memo.category === selectedCategory) ||
-        (selectedCategory === '전체' && !memo.category);
+        memo.category === selectedCategory ||
+        (selectedCategory === '미분류' && !memo.category);
 
       const searchMatch =
         searchTerm === '' ||
@@ -28,8 +49,7 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
         memo.content.toLowerCase().includes(searchTerm.toLowerCase());
       return categoryMatch && searchMatch;
     })
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
+    
   if (filteredMemos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
@@ -40,11 +60,26 @@ export default function MemoList({ memos, searchTerm, selectedCategory, onDelete
     );
   }
 
+  const sortedMemos = selectedCategory === '전체' && searchTerm === '' 
+  ? memos
+  : filteredMemos;
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-      {filteredMemos.map(memo => (
-        <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} />
-      ))}
-    </div>
+    <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={onDragEnd}
+    >
+        <SortableContext
+            items={sortedMemos.map(memo => memo.id)}
+            strategy={verticalListSortingStrategy}
+        >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {sortedMemos.map(memo => (
+                    <MemoCard key={memo.id} memo={memo} onDelete={onDeleteMemo} onUpdate={onUpdateMemo} images={images} />
+                ))}
+            </div>
+        </SortableContext>
+    </DndContext>
   );
 }
