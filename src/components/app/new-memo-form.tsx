@@ -45,7 +45,11 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
   });
 
   function onSubmit(values: FormValues) {
-    onAddMemo(values);
+    const submissionValues = {
+      ...values,
+      category: values.category === 'uncategorized' ? '' : values.category,
+    };
+    onAddMemo(submissionValues);
     toast({
       title: "메모 추가 완료",
       description: `"${values.title}" 메모가 성공적으로 추가되었습니다.`,
@@ -116,14 +120,14 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
           render={({ field }) => (
             <FormItem>
               <FormLabel>카테고리</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="카테고리 선택 (선택 사항)" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">미분류</SelectItem>
+                  <SelectItem value="uncategorized">미분류</SelectItem>
                   {categories.map(category => (
                     <SelectItem key={category} value={category}>{category}</SelectItem>
                   ))}
