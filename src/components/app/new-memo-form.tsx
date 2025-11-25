@@ -44,7 +44,7 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
       title: '',
       content: '',
       category: '',
-      imageUrl: '',
+      imageUrl: undefined,
       isVoiceMemo: false,
       icon: undefined,
       coverImageUrl: undefined,
@@ -61,7 +61,7 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
       title: '',
       content: '',
       category: '',
-      imageUrl: '', // Ensure imageUrl is cleared
+      imageUrl: undefined,
       isVoiceMemo: false,
       icon: undefined,
       coverImageUrl: undefined,
@@ -190,7 +190,7 @@ export default function NewMemoForm({ onAddMemo, categories }: NewMemoFormProps)
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="absolute right-0 mt-2 z-10 bg-sidebar p-4 rounded-md border w-full">
+                  <div className="absolute right-0 mt-2 z-10 bg-card p-4 rounded-md border w-full">
                       <MemoToolbar
                           memo={form.getValues()}
                           onIconChange={handleIconChange}
