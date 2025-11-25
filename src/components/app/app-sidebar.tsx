@@ -64,7 +64,7 @@ export default function AppSidebar({
 
   const scrollAreaStyle = backgroundColor
     ? { backgroundColor: colorToRgba(backgroundColor, backgroundOpacity > 0.2 ? backgroundOpacity - 0.1 : 0.1) }
-    : {};
+    : { backgroundColor: '#ffffff' };
 
   return (
     <Sidebar className={cn(backgroundColor && 'border-none')}>
