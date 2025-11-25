@@ -243,18 +243,21 @@ export default function Home() {
       selectedCategory === t('all') ||
       (selectedCategory === t('uncategorized') && !memo.category) ||
       memo.category === selectedCategory;
+    
+    if (!categoryMatch) {
+      return false;
+    }
 
     if (!searchTerm) {
-      return categoryMatch;
+      return true;
     }
 
     const term = searchTerm.toLowerCase();
-    const searchTermMatch =
+    return (
       (memo.title && memo.title.toLowerCase().includes(term)) ||
       (memo.content && memo.content.toLowerCase().includes(term)) ||
-      (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term));
-
-    return categoryMatch && searchTermMatch;
+      (memo.createdAt && format(new Date(memo.createdAt), 'yyyy-MM-dd').includes(term))
+    );
   });
 
 
